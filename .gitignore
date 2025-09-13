@@ -30,3 +30,11 @@ Thumbs.db
 
 # Tools
 .tmp_tools/
+
+# Mail server sensitive data
+srv_mailcow/config/ssl/
+srv_mailcow/config/secrets/
+srv_mailcow/mail-data/
+
+# Logs
+wget-log

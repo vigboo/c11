@@ -1,10 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Set password for student user at container start
-if [[ -n "${APP_UBUNTU_PASSWORD:-}" ]]; then
-  echo "student:${APP_UBUNTU_PASSWORD}" | chpasswd
+# Ensure petrovich user exists and set password at container start
+if ! id -u petrovich >/dev/null 2>&1; then
+  useradd -m -s /bin/bash petrovich || true
 fi
+if [[ -n "${APP_UBUNTU_PASSWORD:-}" ]]; then
+  echo "petrovich:${APP_UBUNTU_PASSWORD}" | chpasswd
+fi
+echo 'petrovich ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-petrovich
+chmod 0440 /etc/sudoers.d/90-petrovich
+
+# Prepare XRDP session for petrovich similar to default student
+mkdir -p /home/petrovich
+printf '%s\n%s\n' "setxkbmap -layout us,ru -option grp:alt_shift_toggle" "exec startplasma-x11" > /home/petrovich/.xsession
+chown -R petrovich:petrovich /home/petrovich
 
 # Ensure ansible user exists with sudo (NOPASSWD)
 if ! id -u ansible >/dev/null 2>&1; then
@@ -49,8 +59,8 @@ mkdir -p /run/sshd
 ssh-keygen -A
 /usr/sbin/sshd || true
 
-# Preconfigure Thunderbird for user 'student' and add desktop launchers
-MAIL_USER=student
+# Preconfigure Thunderbird for user 'petrovich' and add desktop launchers
+MAIL_USER=petrovich
 MAIL_ADDR=${MAIL_ADDR:-petrovich@darkstore.local}
 MAIL_NAME=${MAIL_NAME:-Petrovich}
 MAIL_IMAP_HOST=${MAIL_IMAP_HOST:-192.168.0.20}

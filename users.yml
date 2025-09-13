@@ -1,9 +1,24 @@
-containers:
-  app_empty1:
-    users:
-      petrovich
-  app_empty2:
-    users:
+staff:
+  user1:
+    name: Боярина Анна Михайловна
+    mail: b.anna@darkstore.local
+    login: b.anna
+    role: CTO
+  user2:
+    name: Петрович Артем Дмитриевич
+    mail: petrovich@darkstore.local
+    login: petrovich
+    role: Системный администратор
+  user3:
+    name: Трастов Евгений Тарасович
+    mail: trust@darkstore.local
+    login: trust
+    role: Главынй провизор
+  user4:
+    name: Боссовна Ирина Ильясовна
+    mail: boss@darkstore.local
+    login: boss
+    role: Директор
       
 networks:
   users_net:
@@ -20,7 +35,7 @@ networks:
 
 nat:
   host_port_80:
-    dnat_to: 192.168.2.20:8080   # bunkerweb HTTP
+    dnat_to: 192.168.2.20:80   # bunkerweb HTTP
     via: fw
   host_port_25:
     dnat_to: 192.168.0.20:25     # srv_mailcow SMTP
@@ -36,7 +51,6 @@ services:
     published_ports:
       - 80:80/tcp
       - 25:25/tcp
-      - 2221:22/tcp
     internal_ports:
       - 22/tcp
     users:

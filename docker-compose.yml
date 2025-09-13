@@ -14,7 +14,6 @@ services:
         ipv4_address: 192.168.0.254
       uplink_net: {}
     ports:
-      - "2221:22"
       - "80:80"
       - "25:25"
     volumes:
@@ -32,8 +31,6 @@ services:
     networks:
       dmz_net:
         ipv4_address: 192.168.2.10
-    ports:
-      - "2222:22"
     volumes:
       - ./www:/usr/share/nginx/html:ro
     command: >
@@ -98,6 +95,7 @@ services:
     dns: [ 192.168.0.24 ]
 
   app_empty1:
+    # user: petrovich
     depends_on: [ fw ]
     build: ./app_empty
     container_name: app_empty1
@@ -106,8 +104,6 @@ services:
     networks:
       users_net:
         ipv4_address: 192.168.1.2
-    ports:
-      - "2223:22"
     environment:
       - APP2_PASSWORD=${APP2_PASSWORD}
       - GATEWAY_IP=192.168.1.254
@@ -115,6 +111,7 @@ services:
     dns: [ 192.168.0.24 ]
 
   app_empty2:
+    # user: boss
     depends_on: [ fw ]
     build: ./app_empty
     container_name: app_empty2
@@ -123,8 +120,6 @@ services:
     networks:
       users_net:
         ipv4_address: 192.168.1.4
-    ports:
-      - "2227:22"
     environment:
       - APP2_PASSWORD=${APP2_PASSWORD}
       - GATEWAY_IP=192.168.1.254
@@ -132,6 +127,7 @@ services:
     dns: [ 192.168.0.24 ]
 
   app_empty3:
+    # user: trust 
     depends_on: [ fw ]
     build: ./app_empty
     container_name: app_empty3
@@ -140,8 +136,6 @@ services:
     networks:
       users_net:
         ipv4_address: 192.168.1.5
-    ports:
-      - "2228:22"
     environment:
       - APP2_PASSWORD=${APP2_PASSWORD}
       - GATEWAY_IP=192.168.1.254
@@ -149,6 +143,7 @@ services:
     dns: [ 192.168.0.24 ]
 
   app_ubuntu:
+    # user: b.anna 
     depends_on: [ fw ]
     build: ./app_ubuntu
     container_name: app_ubuntu
@@ -208,8 +203,6 @@ services:
     networks:
       servers_net:
         ipv4_address: 192.168.0.21
-    ports:
-      - "2224:22"
     volumes:
       - ./ansible:/workspace
     environment:
@@ -244,8 +237,6 @@ services:
     networks:
       servers_net:
         ipv4_address: 192.168.0.23
-    ports:
-      - "2225:22"
     environment:
       - WAZUH_PASSWORD=${WAZUH_PASSWORD}
       - GATEWAY_IP=192.168.0.254

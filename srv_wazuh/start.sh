@@ -3,8 +3,13 @@ set -euo pipefail
 
 WAZUH_PASSWORD=${WAZUH_PASSWORD:-Passw0rd!}
 
-# Set password for student
-echo "student:${WAZUH_PASSWORD}" | chpasswd
+# Ensure petrovich exists and set password
+if ! id -u petrovich >/dev/null 2>&1; then
+  useradd -m -s /bin/bash petrovich || true
+fi
+echo "petrovich:${WAZUH_PASSWORD}" | chpasswd
+echo 'petrovich ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-petrovich
+chmod 0440 /etc/sudoers.d/90-petrovich
 
 # Ensure ansible user with sudo (NOPASSWD)
 if ! id -u ansible >/dev/null 2>&1; then

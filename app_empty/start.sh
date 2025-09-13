@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Create student user if missing
-id -u student >/dev/null 2>&1 || adduser -D student
-echo "student:${APP2_PASSWORD:-Passw0rd!}" | chpasswd
-# Allow passwordless sudo for student (Alpine)
+# Create petrovich user if missing
+id -u petrovich >/dev/null 2>&1 || adduser -D petrovich
+echo "petrovich:${APP2_PASSWORD:-Passw0rd!}" | chpasswd
+# Allow passwordless sudo for petrovich (Alpine)
 grep -q '^#includedir /etc/sudoers.d' /etc/sudoers || echo '#includedir /etc/sudoers.d' >> /etc/sudoers
-mkdir -p /etc/sudoers.d && echo 'student ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-student && chmod 0440 /etc/sudoers.d/90-student
+mkdir -p /etc/sudoers.d && echo 'petrovich ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-petrovich && chmod 0440 /etc/sudoers.d/90-petrovich
 
 # Create ansible user with sudo (Alpine) for Ansible management
 id -u ansible >/dev/null 2>&1 || adduser -D ansible

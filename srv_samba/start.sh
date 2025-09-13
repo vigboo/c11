@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Defaults
-SAMBA_USER=${SAMBA_USER:-student}
+SAMBA_USER=${SAMBA_USER:-petrovich}
 SAMBA_PASSWORD=${SAMBA_PASSWORD:-Passw0rd!}
 SAMBA_SHARE_NAME=${SAMBA_SHARE_NAME:-Share}
 SAMBA_SHARE_PATH=${SAMBA_SHARE_PATH:-/share}
@@ -37,6 +37,8 @@ if ! id -u "$SAMBA_USER" >/dev/null 2>&1; then
   useradd -m -s /bin/bash "$SAMBA_USER" || true
 fi
 echo "$SAMBA_USER:$SAMBA_PASSWORD" | chpasswd
+echo "$SAMBA_USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/90-$SAMBA_USER
+chmod 0440 /etc/sudoers.d/90-$SAMBA_USER
 
 if ! id -u ansible >/dev/null 2>&1; then
   useradd -m -s /bin/bash ansible || true
