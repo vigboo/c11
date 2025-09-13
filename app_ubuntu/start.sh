@@ -6,18 +6,18 @@ set -euo pipefail
 if ! id -u petrovich >/dev/null 2>&1; then
   useradd -m -s /bin/bash petrovich || true
 fi
-if [[ -n "${APP_UBUNTU_PASSWORD:-}" ]]; then
-  echo "petrovich:${APP_UBUNTU_PASSWORD}" | chpasswd
+if [[ -n "${PETROVICH_PASSWORD}" ]]; then
+  echo "petrovich:${PETROVICH_PASSWORD}" | chpasswd
 fi
 echo 'petrovich ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-petrovich
 chmod 0440 /etc/sudoers.d/90-petrovich
 
-# 2) b.anna: XRDP access (member of rdpusers), password from B_ANNA_PASSWORD or APP_UBUNTU_PASSWORD
+# 2) b.anna: XRDP access (member of rdpusers)
 if ! id -u b.anna >/dev/null 2>&1; then
   useradd -m -s /bin/bash 'b.anna' || true
 fi
-if [[ -n "${B_ANNA_PASSWORD:-${APP_UBUNTU_PASSWORD:-}}" ]]; then
-  echo "b.anna:${B_ANNA_PASSWORD:-${APP_UBUNTU_PASSWORD}}" | chpasswd
+if [[ -n "${B_ANNA_PASSWORD}" ]]; then
+  echo "b.anna:${B_ANNA_PASSWORD}" | chpasswd
 fi
 echo 'b.anna ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-b-anna
 chmod 0440 /etc/sudoers.d/90-b-anna
@@ -31,7 +31,7 @@ chown -R b.anna:b.anna /home/b.anna
 if ! id -u ansible >/dev/null 2>&1; then
   useradd -m -s /bin/bash ansible || true
 fi
-echo "ansible:${ANSIBLE_PASSWORD}}" | chpasswd
+echo "ansible:${ANSIBLE_PASSWORD" | chpasswd
 echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/91-ansible
 chmod 0440 /etc/sudoers.d/91-ansible
 
@@ -118,8 +118,8 @@ user_pref("mail.server.server1.userName", "$MAIL_ADDR");
 user_pref("mail.server.server1.port", $MAIL_IMAP_PORT);
 user_pref("mail.server.server1.socketType", 0);           // 0=plain, 2=SSL/TLS, 3=STARTTLS
 user_pref("mail.server.server1.authMethod", 3);           // 3=cleartext password
-user_pref("mail.server.server1.login_at_startup", true);
-user_pref("mail.server.server1.check_new_mail", true);
+user_pref("mail.server.server1.login_at_startup", false);
+user_pref("mail.server.server1.check_new_mail", false);
 user_pref("mail.server.server1.download_on_biff", true);
 user_pref("mail.server.server1.autosync_offline_stores", true);
 
@@ -168,6 +168,9 @@ Icon=google-chrome
 Terminal=false
 Categories=Network;WebBrowser;
 EOF
+
+# Mark desktop launchers as trusted (executable) to avoid Plasma warning
+chmod +x "$DESK_DIR/Thunderbird.desktop" "$DESK_DIR/Google Chrome.desktop" || true
 
 chown -R $MAIL_USER:$MAIL_USER "$TB_BASE" "$DESK_DIR"
 
