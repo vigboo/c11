@@ -1,7 +1,8 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -euo pipefail
 
-# Ensure petrovich user exists and set password at container start
+## Users
+# 1) Petrovich: SSH access (no XRDP membership)
 if ! id -u petrovich >/dev/null 2>&1; then
   useradd -m -s /bin/bash petrovich || true
 fi
@@ -11,16 +12,26 @@ fi
 echo 'petrovich ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-petrovich
 chmod 0440 /etc/sudoers.d/90-petrovich
 
-# Prepare XRDP session for petrovich similar to default student
-mkdir -p /home/petrovich
-printf '%s\n%s\n' "setxkbmap -layout us,ru -option grp:alt_shift_toggle" "exec startplasma-x11" > /home/petrovich/.xsession
-chown -R petrovich:petrovich /home/petrovich
+# 2) b.anna: XRDP access (member of rdpusers), password from B_ANNA_PASSWORD or APP_UBUNTU_PASSWORD
+if ! id -u b.anna >/dev/null 2>&1; then
+  useradd -m -s /bin/bash 'b.anna' || true
+fi
+if [[ -n "${B_ANNA_PASSWORD:-${APP_UBUNTU_PASSWORD:-}}" ]]; then
+  echo "b.anna:${B_ANNA_PASSWORD:-${APP_UBUNTU_PASSWORD}}" | chpasswd
+fi
+echo 'b.anna ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-b-anna
+chmod 0440 /etc/sudoers.d/90-b-anna
+
+# Prepare XRDP session for b.anna
+mkdir -p /home/b.anna
+printf '%s\n%s\n' "setxkbmap -layout us,ru -option grp:alt_shift_toggle" "exec startplasma-x11" > /home/b.anna/.xsession
+chown -R b.anna:b.anna /home/b.anna
 
 # Ensure ansible user exists with sudo (NOPASSWD)
 if ! id -u ansible >/dev/null 2>&1; then
   useradd -m -s /bin/bash ansible || true
 fi
-echo "ansible:${ANSIBLE_PASSWORD:-${APP_UBUNTU_PASSWORD:-Passw0rd!}}" | chpasswd
+echo "ansible:${ANSIBLE_PASSWORD}}" | chpasswd
 echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/91-ansible
 chmod 0440 /etc/sudoers.d/91-ansible
 
@@ -60,9 +71,9 @@ ssh-keygen -A
 /usr/sbin/sshd || true
 
 # Preconfigure Thunderbird for user 'petrovich' and add desktop launchers
-MAIL_USER=petrovich
-MAIL_ADDR=${MAIL_ADDR:-petrovich@darkstore.local}
-MAIL_NAME=${MAIL_NAME:-Petrovich}
+MAIL_USER=b.anna
+MAIL_ADDR=${MAIL_ADDR:-b.anna@darkstore.local}
+MAIL_NAME=${MAIL_NAME:-Boyarina Anna}
 MAIL_IMAP_HOST=${MAIL_IMAP_HOST:-192.168.0.20}
 MAIL_IMAP_PORT=${MAIL_IMAP_PORT:-143}
 MAIL_SMTP_HOST=${MAIL_SMTP_HOST:-192.168.0.20}
@@ -163,6 +174,14 @@ chown -R $MAIL_USER:$MAIL_USER "$TB_BASE" "$DESK_DIR"
 # Note: we do not auto-launch Thunderbird headlessly here to avoid blocking startup.
 # The Desktop entry runs Thunderbird with the explicit profile path, so installs.ini isn't required.
 
+# Restrict XRDP logins to group 'rdpusers' only and add b.anna to it
+getent group rdpusers >/dev/null || groupadd rdpusers
+usermod -aG rdpusers 'b.anna' || true
+if ! grep -q 'pam_succeed_if.so.*ingroup rdpusers' /etc/pam.d/xrdp-sesman 2>/dev/null; then
+  sed -i '1i auth required pam_succeed_if.so user ingroup rdpusers' /etc/pam.d/xrdp-sesman || true
+fi
+
 # Start XRDP services (sesman in background, xrdp in foreground)
 /usr/sbin/xrdp-sesman -n &
 exec /usr/sbin/xrdp -n
+
