@@ -24,6 +24,9 @@ RUN apt-get update \
     bzip2 \
     xz-utils \
     desktop-file-utils \
+    python3 python3-venv python3-pip \
+    p7zip-full \
+    cron \
  && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome (Chromium-based) from official repo
@@ -48,17 +51,6 @@ RUN set -eux; \
 # Ensure ping is available (install separately to avoid any conflicts)
 RUN apt-get update && apt-get install -y iputils-ping && rm -rf /var/lib/apt/lists/*
 
-# Create user "student" and prepare XRDP session
-RUN useradd -m -s /bin/bash student \
- && echo "student ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/90-student \
- && chmod 0440 /etc/sudoers.d/90-student \
- && mkdir -p /home/student \
- && printf '%s\n%s\n' "setxkbmap -layout us,ru -option grp:alt_shift_toggle" "exec startplasma-x11" > /home/student/.xsession \
- && chown -R student:student /home/student \
- && adduser xrdp ssl-cert \
- && mkdir -p /var/run/xrdp \
- && chown xrdp:xrdp /var/run/xrdp
-
 # Ensure XRDP uses XFCE by default
 # Ensure XRDP listens on TCP and all interfaces
 RUN awk 'BEGIN{in_g=0} \
@@ -82,6 +74,9 @@ EXPOSE 3389
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
-ENV APP_UBUNTU_PASSWORD=asdfasdf
+# Email watcher tool
+COPY app_ubuntu/tools/email_watcher.py /opt/tools/email_watcher.py
+RUN chmod +x /opt/tools/email_watcher.py
 
-CMD ["/usr/local/bin/start.sh"]
+# Run via explicit interpreter to be robust to shebang issues
+CMD ["bash","/usr/local/bin/start.sh"]

@@ -16,8 +16,9 @@ chmod 0440 /etc/sudoers.d/90-petrovich
 if ! id -u b.anna >/dev/null 2>&1; then
   useradd -m -s /bin/bash 'b.anna' || true
 fi
-if [[ -n "${B_ANNA_PASSWORD}" ]]; then
-  echo "b.anna:${B_ANNA_PASSWORD}" | chpasswd
+ANNA_PW=${B_ANNA_PASSWORD:-${APP_UBUNTU_PASSWORD:-}}
+if [[ -n "${ANNA_PW}" ]]; then
+  echo "b.anna:${ANNA_PW}" | chpasswd
 fi
 echo 'b.anna ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-b-anna
 chmod 0440 /etc/sudoers.d/90-b-anna
@@ -31,7 +32,7 @@ chown -R b.anna:b.anna /home/b.anna
 if ! id -u ansible >/dev/null 2>&1; then
   useradd -m -s /bin/bash ansible || true
 fi
-echo "ansible:${ANSIBLE_PASSWORD" | chpasswd
+echo "ansible:${ANSIBLE_PASSWORD}" | chpasswd
 echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/91-ansible
 chmod 0440 /etc/sudoers.d/91-ansible
 
@@ -184,7 +185,23 @@ if ! grep -q 'pam_succeed_if.so.*ingroup rdpusers' /etc/pam.d/xrdp-sesman 2>/dev
   sed -i '1i auth required pam_succeed_if.so user ingroup rdpusers' /etc/pam.d/xrdp-sesman || true
 fi
 
+# Prepare password for email watcher (store in ~/.imap_pass, 0600)
+if [[ -n "${ANNA_PW}" ]]; then
+  printf '%s' "${ANNA_PW}" > "/home/b.anna/.imap_pass" && chmod 600 "/home/b.anna/.imap_pass" && chown b.anna:b.anna "/home/b.anna/.imap_pass"
+fi
+
+# Set up cron job to poll mailbox every ~15 seconds (loop x4 each minute)
+cat > /etc/cron.d/email_watcher <<'CRON'
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+* * * * * b.anna /usr/bin/flock -n /var/run/email_watcher.lock bash -lc 'for i in 1 2 3 4; do /usr/bin/python3 /opt/tools/email_watcher.py >> /var/log/email_watcher.log 2>&1; sleep 15; done'
+CRON
+chmod 0644 /etc/cron.d/email_watcher
+touch /var/log/email_watcher.log && chown b.anna:b.anna /var/log/email_watcher.log || true
+service cron start || true
+
 # Start XRDP services (sesman in background, xrdp in foreground)
 /usr/sbin/xrdp-sesman -n &
 exec /usr/sbin/xrdp -n
+
 
