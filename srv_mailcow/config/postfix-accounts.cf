@@ -1,9 +1,4 @@
-@darkstore.local|
-@darkstore.local|
-@darkstore.local|
-@darkstore.local|
-@darkstore.local|
-petrovich@darkstore.local|{SHA512-CRYPT}$6$Ir6067jA.tiaqn3.$T7O.id9.hYGywaAAl5NHna02aOxuQyEFLwticgB8bCZbdjl5JE6UISmfFkH8KdLlskx/FDfcwGaMZw0Qer1wm/
-boss@darkstore.local|{SHA512-CRYPT}$6$nZq3D0rYgvl5sbr9$CAnV6NVOmkpYpCGqNblXEzUnl44LlocO2917ZfME9ANe4QGBltC1mBQHHT/3OZ0fX53fCj00N95J6gUMaj1Mt1
-evgen@darkstore.local|{SHA512-CRYPT}$6$M6ex8U0NTs25EJB0$Lsyui3sa.pDv3K7cddt7aaR2B.jJkdFN/YERTfvC5XjYvjoAu5eJJ244wCP0RQqNbDiZFwlukG7OtCJYqWy8B0
-brown.anna@darkstore.local|{SHA512-CRYPT}$6$wdBaTIdD8nbePCkz$672anqE2wMO.8jttVMfeXtp2op.jTC7ZjajFsO37PjGxxJ.wDP7X8dNCmS8z4utUi/58/CI2IMca8cLLfkDLk.
+petrovich@darkstore.local|{SHA512-CRYPT}$6$rounds=656000$PZAzOCZ0iRPxxcS0$GdGUnLhDKn8qkawuq.3Na9PaAjou0tNlI8bOd6.zKjI3AA7nB99UjhIkHOgNCI9b1yOv4hKLmWjC/lNhyGXMC0
+boss@darkstore.local|{SHA512-CRYPT}$6$rounds=656000$p9NtJN9ZC29EN1jp$8fTPLBycAHR3o7zu9u9Fgt.OSyzjKUJqkM7pkOHvr6Z1ji4j8D5avLwIYJ0UrJs11/yjc3ryfon0tVbaK6TCT1
+trust@darkstore.local|{SHA512-CRYPT}$6$rounds=656000$LwZep568WnaFBNSs$jYfFUQxqw4vV0PhzSuPD2272DTx2q00fyM0cgKT1KbHA8LvtYxhlY9BcYukK1tdkuplwgZmpIJIgjZjZun.sj.
+b.anna@darkstore.local|{SHA512-CRYPT}$6$rounds=656000$ZfNcdQKt30UG3b44$vHd6Z9TuuwAVcD2vZPVni6sxdFKfprFVBwprFdWFdL1PHsdDsAu/F.rMrg3Lrlly6rchEqe.4ZnAaYFX0NFag1
