@@ -1,0 +1,192 @@
+containers:
+  app_empty1:
+    users:
+      petrovich
+  app_empty2:
+    users:
+      
+networks:
+  users_net:
+    subnet: 192.168.1.0/24
+    gateway_fw: 192.168.1.254
+  dmz_net:
+    subnet: 192.168.2.0/24
+    gateway_fw: 192.168.2.254
+  servers_net:
+    subnet: 192.168.0.0/24
+    gateway_fw: 192.168.0.254
+  uplink_net:
+    note: docker bridge for external/NAT egress
+
+nat:
+  host_port_80:
+    dnat_to: 192.168.2.20:8080   # bunkerweb HTTP
+    via: fw
+  host_port_25:
+    dnat_to: 192.168.0.20:25     # srv_mailcow SMTP
+    via: fw
+
+services:
+  fw:
+    segment: multi (users_net, dmz_net, servers_net, uplink_net)
+    ip:
+      users_net: 192.168.1.254
+      dmz_net: 192.168.2.254
+      servers_net: 192.168.0.254
+    published_ports:
+      - 80:80/tcp
+      - 25:25/tcp
+      - 2221:22/tcp
+    internal_ports:
+      - 22/tcp
+    users:
+      - name: student
+        password_env: FW_PASSWORD
+    notes: DNAT host:80->bunkerweb:8080; DNAT host:25->srv_mailcow:25
+
+  bunkerweb:
+    segment: dmz_net
+    ip: 192.168.2.20
+    published_ports: []
+    internal_ports:
+      - 8080/tcp  # HTTP
+      - 8443/tcp  # HTTPS/HTTP3
+    users: []
+    notes: Reverse proxy/WAF to app_nginx (192.168.2.10)
+
+  app_nginx:
+    segment: dmz_net
+    ip: 192.168.2.10
+    gateway: 192.168.2.254
+    published_ports:
+      - 2222:22/tcp
+    internal_ports:
+      - 80/tcp
+      - 22/tcp
+    users:
+      - name: student
+        password_env: APP1_PASSWORD
+      - name: ansible
+        password_env: ANSIBLE_PASSWORD
+
+  app_empty1:
+    segment: users_net
+    ip: 192.168.1.11
+    gateway: 192.168.1.254
+    published_ports:
+      - 2223:22/tcp
+    internal_ports:
+      - 22/tcp
+    users:
+      - name: student
+        password_env: APP2_PASSWORD
+      - name: ansible
+        password_env: ANSIBLE_PASSWORD
+
+  app_empty2:
+    segment: users_net
+    ip: 192.168.1.12
+    gateway: 192.168.1.254
+    published_ports:
+      - 2227:22/tcp
+    internal_ports:
+      - 22/tcp
+    users:
+      - name: student
+        password_env: APP2_PASSWORD
+      - name: ansible
+        password_env: ANSIBLE_PASSWORD
+
+  app_empty3:
+    segment: users_net
+    ip: 192.168.1.13
+    gateway: 192.168.1.254
+    published_ports:
+      - 2228:22/tcp
+    internal_ports:
+      - 22/tcp
+    users:
+      - name: student
+        password_env: APP2_PASSWORD
+      - name: ansible
+        password_env: ANSIBLE_PASSWORD
+
+  app_ubuntu:
+    segment: users_net
+    ip: 192.168.1.10
+    gateway: 192.168.1.254
+    published_ports:
+      - 6666:3389/tcp
+    internal_ports:
+      - 3389/tcp
+      - 22/tcp
+    users:
+      - name: student
+        password_env: APP_UBUNTU_PASSWORD
+      - name: ansible
+        password_env: ANSIBLE_PASSWORD
+    applications:
+      - thunderbird (preconfigured IMAP/SMTP to 192.168.0.20)
+      - google-chrome
+
+  srv_mailcow:
+    segment: servers_net
+    ip: 192.168.0.20
+    gateway: 192.168.0.254
+    published_ports: []
+    internal_ports:
+      - 25/tcp   # SMTP
+      - 110/tcp  # POP3
+      - 143/tcp  # IMAP
+      - 465/tcp  # SMTPS
+      - 587/tcp  # Submission
+    users: []
+    notes: Mail stack; no SSH account provisioned
+
+  srv_ansible:
+    segment: servers_net
+    ip: 192.168.0.21
+    gateway: 192.168.0.254
+    published_ports:
+      - 2224:22/tcp
+    internal_ports:
+      - 22/tcp
+    users:
+      - name: student
+        password_env: ANSIBLE_PASSWORD
+      - name: ansible
+        password_env: ANSIBLE_PASSWORD
+
+  srv_samba:
+    segment: servers_net
+    ip: 192.168.0.22
+    gateway: 192.168.0.254
+    published_ports: []
+    internal_ports:
+      - 22/tcp
+      - 139/tcp
+      - 445/tcp
+      - 137/udp
+      - 138/udp
+    users:
+      - name: student
+        password_env: SAMBA_PASSWORD
+      - name: ansible
+        password_env: ANSIBLE_PASSWORD
+    share:
+      name: ${SAMBA_SHARE_NAME}
+      path: /share  # host bind ./samba/share
+
+  srv_wazuh:
+    segment: servers_net
+    ip: 192.168.0.23
+    gateway: 192.168.0.254
+    published_ports:
+      - 2225:22/tcp
+    internal_ports:
+      - 22/tcp
+    users:
+      - name: student
+        password_env: WAZUH_PASSWORD
+      - name: ansible
+        password_env: ANSIBLE_PASSWORD

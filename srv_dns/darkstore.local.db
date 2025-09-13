@@ -1,0 +1,20 @@
+$ORIGIN darkstore.local.
+$TTL 300
+@   IN SOA ns.darkstore.local. admin.darkstore.local. (
+        2025091001 ; Serial
+        3600       ; Refresh
+        900        ; Retry
+        604800     ; Expire
+        300 )      ; Minimum
+
+; NS
+@         IN NS ns.darkstore.local.
+
+; APEX and hosts
+@         IN A 192.168.2.10
+ns        IN A 192.168.0.24
+mail      IN A 192.168.0.20
+
+; Optional helpful records
+; wildcard to avoid surprises (can be removed later)
+*.dev     IN A 192.168.2.22

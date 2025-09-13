@@ -1,0 +1,290 @@
+services:
+  fw:
+    build: ./fw
+    container_name: fw
+    privileged: true
+    cap_add: [ "NET_ADMIN" ]
+    restart: always
+    networks:
+      users_net:
+        ipv4_address: 192.168.1.254
+      dmz_net:
+        ipv4_address: 192.168.2.254
+      servers_net:
+        ipv4_address: 192.168.0.254
+      uplink_net: {}
+    ports:
+      - "2221:22"
+      - "80:80"
+      - "25:25"
+    volumes:
+      - ./fw/nftables.conf:/etc/nftables.conf:ro
+    environment:
+      - FW_PASSWORD=${FW_PASSWORD}
+    dns: [ 192.168.0.24 ]
+
+  app_nginx:
+    depends_on: [ fw ]
+    image: alpine:3.20
+    container_name: app_nginx
+    cap_add: [ "NET_ADMIN" ]        # нужно, чтобы переписать дефолтный маршрут
+    restart: always
+    networks:
+      dmz_net:
+        ipv4_address: 192.168.2.10
+    ports:
+      - "2222:22"
+    volumes:
+      - ./www:/usr/share/nginx/html:ro
+    command: >
+      sh -c "
+        # дефолтный маршрут через firewall-контейнер (сразу, до apk)
+        ip route del default || true && ip route add default via 192.168.2.254 &&
+        apk add --no-cache nginx openssh iproute2 sudo &&
+        id -u student >/dev/null 2>&1 || adduser -D student &&
+        echo \"student:${APP1_PASSWORD:-Passw0rd!}\" | chpasswd &&
+        grep -q '^#includedir /etc/sudoers.d' /etc/sudoers || echo '#includedir /etc/sudoers.d' >> /etc/sudoers &&
+        mkdir -p /etc/sudoers.d && echo 'student ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-student && chmod 0440 /etc/sudoers.d/90-student &&
+        id -u ansible >/dev/null 2>&1 || adduser -D ansible &&
+        echo \"ansible:${ANSIBLE_PASSWORD:-${APP1_PASSWORD:-Passw0rd!}}\" | chpasswd &&
+        echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/91-ansible && chmod 0440 /etc/sudoers.d/91-ansible &&
+        sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config &&
+        sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config &&
+        # повторно зафиксировать маршрут (на случай изменений)
+        ip route del default || true && ip route add default via 192.168.2.254 &&
+        # nginx минималка
+        mkdir -p /run/nginx /run/sshd &&
+        # запустить sshd в фоне и nginx на переднем плане
+        ssh-keygen -A && /usr/sbin/sshd &&
+        printf 'server { listen 80 default_server; server_name _; root /usr/share/nginx/html; index index.html; location / { try_files $$uri $$uri/ =404; } }' > /etc/nginx/http.d/zz-serve.conf && rm -f /etc/nginx/http.d/default.conf &&
+        nginx -g 'daemon off;'
+      "
+    environment:
+      - APP1_PASSWORD=${APP1_PASSWORD}
+      - GATEWAY_IP=192.168.2.254
+      - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
+    dns: [ 192.168.0.24 ]
+
+  bunkerweb:
+    depends_on: [ fw ]
+    image: bunkerity/bunkerweb:latest
+    container_name: bunkerweb
+    cap_add: [ "NET_ADMIN" ]
+    restart: always
+    networks:
+      dmz_net:
+        ipv4_address: 192.168.2.20
+    environment:
+      # Basic reverse-proxy to app_nginx
+      # Single-site: map localhost to backend via WAF
+      - MULTISITE=no
+      - SERVER_NAME=localhost 127.0.0.1 darkstore.local _
+      - USE_REVERSE_PROXY=yes
+      - REVERSE_PROXY_HOST=http://192.168.2.10
+      - REVERSE_PROXY_URL=/
+      - HTTP_PORT=80
+      - AUTOCONF_MODE=yes
+      # Baseline WAF/rate limit (conservative defaults; adjust if needed)
+      - WAF=on
+      - RATE_LIMIT=on
+      - RATE_LIMIT_REQUESTS=100
+      - RATE_LIMIT_BURST=50
+      - RATE_LIMIT_PERIOD=1s
+    volumes:
+      - ./bunkerweb/conf:/etc/bunkerweb
+      - ./bunkerweb/data:/var/lib/bunkerweb
+      # static files for autoconf include path
+      # (custom HTTP servers go under /etc/bunkerweb/configs/http)
+    dns: [ 192.168.0.24 ]
+
+  app_empty1:
+    depends_on: [ fw ]
+    build: ./app_empty
+    container_name: app_empty1
+    cap_add: [ "NET_ADMIN" ]
+    restart: always
+    networks:
+      users_net:
+        ipv4_address: 192.168.1.2
+    ports:
+      - "2223:22"
+    environment:
+      - APP2_PASSWORD=${APP2_PASSWORD}
+      - GATEWAY_IP=192.168.1.254
+      - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
+    dns: [ 192.168.0.24 ]
+
+  app_empty2:
+    depends_on: [ fw ]
+    build: ./app_empty
+    container_name: app_empty2
+    cap_add: [ "NET_ADMIN" ]
+    restart: always
+    networks:
+      users_net:
+        ipv4_address: 192.168.1.4
+    ports:
+      - "2227:22"
+    environment:
+      - APP2_PASSWORD=${APP2_PASSWORD}
+      - GATEWAY_IP=192.168.1.254
+      - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
+    dns: [ 192.168.0.24 ]
+
+  app_empty3:
+    depends_on: [ fw ]
+    build: ./app_empty
+    container_name: app_empty3
+    cap_add: [ "NET_ADMIN" ]
+    restart: always
+    networks:
+      users_net:
+        ipv4_address: 192.168.1.5
+    ports:
+      - "2228:22"
+    environment:
+      - APP2_PASSWORD=${APP2_PASSWORD}
+      - GATEWAY_IP=192.168.1.254
+      - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
+    dns: [ 192.168.0.24 ]
+
+  app_ubuntu:
+    depends_on: [ fw ]
+    build: ./app_ubuntu
+    container_name: app_ubuntu
+    cap_add: [ "NET_ADMIN" ]
+    restart: always
+    networks:
+      users_net:
+        ipv4_address: 192.168.1.3
+    ports:
+      - "6666:3389"
+    environment:
+      - APP_UBUNTU_PASSWORD=${APP_UBUNTU_PASSWORD}
+      - GATEWAY_IP=192.168.1.254
+      - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
+    dns: [ 192.168.0.24 ]
+
+  srv_mailcow:
+    depends_on: [ fw ]
+    build: ./srv_mailcow
+    container_name: srv_mailcow
+    hostname: mail
+    domainname: darkstore.local
+    shm_size: "256m"
+    restart: always
+    networks:
+      servers_net:
+        ipv4_address: 192.168.0.20
+    environment:
+      # Hostname/FQDN
+      - DMS_HELO_NAME=mail.darkstore.local
+      # Enable core filtering stack
+      - ENABLE_RSPAMD=1
+      - ENABLE_CLAMAV=1
+      - ENABLE_POSTSCREEN=1
+      # DKIM auto-generation for darkstore.local
+      - ENABLE_OPENDKIM=1
+      - DKIM_AUTOGENERATE=1
+      - DKIM_SELECTOR=mail
+      # IMAP/POP internal only (no host port publishing)
+      - ENABLE_IMAP=1
+      - ENABLE_POP3=1
+      # Disable TLS (lab only) – see postfix/dovecot overrides in config
+      - SSL_TYPE=manual
+      - SSL_CERT_PATH=/tmp/docker-mailserver/ssl/cert.pem
+      - SSL_KEY_PATH=/tmp/docker-mailserver/ssl/key.pem
+    volumes:
+      - ./srv_mailcow/config/:/tmp/docker-mailserver/
+      # Use internal volumes for mail data/logs to avoid permission issues on host FS
+    dns: [ 192.168.0.24 ]
+
+  srv_ansible:
+    depends_on: [ fw ]
+    build: ./srv_ansible
+    container_name: srv_ansible
+    cap_add: [ "NET_ADMIN" ]
+    restart: always
+    networks:
+      servers_net:
+        ipv4_address: 192.168.0.21
+    ports:
+      - "2224:22"
+    volumes:
+      - ./ansible:/workspace
+    environment:
+      - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
+      - GATEWAY_IP=192.168.0.254
+    dns: [ 192.168.0.24 ]
+
+  srv_samba:
+    depends_on: [ fw ]
+    build: ./srv_samba
+    container_name: srv_samba
+    cap_add: [ "NET_ADMIN" ]
+    restart: always
+    networks:
+      servers_net:
+        ipv4_address: 192.168.0.22
+    volumes:
+      - ./samba/share:/share
+    environment:
+      - SAMBA_USER=${SAMBA_USER}
+      - SAMBA_PASSWORD=${SAMBA_PASSWORD}
+      - SAMBA_SHARE_NAME=${SAMBA_SHARE_NAME}
+      - GATEWAY_IP=192.168.0.254
+    dns: [ 192.168.0.24 ]
+
+  srv_wazuh:
+    depends_on: [ fw ]
+    build: ./srv_wazuh
+    container_name: srv_wazuh
+    cap_add: [ "NET_ADMIN" ]
+    restart: always
+    networks:
+      servers_net:
+        ipv4_address: 192.168.0.23
+    ports:
+      - "2225:22"
+    environment:
+      - WAZUH_PASSWORD=${WAZUH_PASSWORD}
+      - GATEWAY_IP=192.168.0.254
+      - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
+    dns: [ 192.168.0.24 ]
+
+  srv_dns:
+    depends_on: [ fw ]
+    image: coredns/coredns:1.11.1
+    container_name: srv_dns
+    cap_add: [ "NET_ADMIN" ]
+    restart: always
+    networks:
+      servers_net:
+        ipv4_address: 192.168.0.24
+    volumes:
+      - ./srv_dns/Corefile:/etc/coredns/Corefile:ro
+      - ./srv_dns/darkstore.local.db:/etc/coredns/darkstore.local.db:ro
+    command: ["-conf", "/etc/coredns/Corefile"]
+    expose:
+      - "53"
+      - "53/udp"
+
+
+networks:
+  users_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
+  dmz_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.2.0/24
+  servers_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.0.0/24
+  uplink_net:
+    driver: bridge

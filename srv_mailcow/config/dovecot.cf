@@ -1,0 +1,3 @@
+# Disable TLS for IMAP/POP (lab)
+ssl = no
+disable_plaintext_auth = no

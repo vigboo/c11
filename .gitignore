@@ -1,0 +1,32 @@
+# Local Codex/CLI files
+codex.instructions
+
+# Secrets / env
+.env
+*.env
+
+# Editors / IDE
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# OS / misc
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+~$*
+
+# Tools
+.tmp_tools/
