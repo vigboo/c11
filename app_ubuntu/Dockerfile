@@ -71,12 +71,15 @@ RUN awk 'BEGIN{in_g=0} \
 
 EXPOSE 3389
 
-COPY start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
-
 # Email watcher tool
 COPY tools/email_watcher.py /opt/tools/email_watcher.py
 RUN chmod +x /opt/tools/email_watcher.py
 
-# Run via explicit interpreter to be robust to shebang issues
-CMD ["bash","/usr/local/bin/start.sh"]
+# Install Dolpin
+RUN apt-get update && apt-get install -y dolphin kio-extras
+
+# Run start.sh
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
+RUN mkdir /mnt/Share
+CMD ["bash", "/usr/local/bin/start.sh"]

@@ -15,6 +15,7 @@ services:
       uplink_net: {}
     ports:
       - "80:80"
+      - "25:25"
     volumes:
       - ./fw/nftables.conf:/etc/nftables.conf:ro
     environment:
@@ -145,7 +146,7 @@ services:
 
   app_ubuntu:
     # user: b.anna 
-    depends_on: [ fw ]
+    depends_on: [ fw, srv_samba]
     build: ./app_ubuntu
     container_name: app_ubuntu
     cap_add: [ "NET_ADMIN" ]
@@ -159,8 +160,11 @@ services:
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
       - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
       - B_ANNA_PASSWORD=${B_ANNA_PASSWORD}
+      - SAMBA_USER=${SAMBA_USER}
+      - SAMBA_PASSWORD=${SAMBA_PASSWORD}
       - GATEWAY_IP=192.168.1.254
     dns: [ 192.168.0.24 ]
+    privileged: true
 
   srv_mailcow:
     depends_on: [ fw ]
@@ -173,8 +177,7 @@ services:
     networks:
       servers_net:
         ipv4_address: 192.168.0.20
-    ports:
-      - "25:25"
+    # no host port publishing; access via fw DNAT
     environment:
       # Hostname/FQDN
       - DMS_HELO_NAME=mail.darkstore.local

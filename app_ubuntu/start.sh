@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 # Ensure APT repositories use HTTPS (replace any http:// with https://)
@@ -206,8 +206,24 @@ chmod 0644 /etc/cron.d/email_watcher
 touch /var/log/email_watcher.log && chown b.anna:b.anna /var/log/email_watcher.log || true
 service cron start || true
 
+# Mount Samba share on srv_samba
+mount -t cifs //192.168.0.22/Share /mnt/Share -o username=${SAMBA_USER},password="${SAMBA_PASSWORD}",vers=3.0,iocharset=utf8,uid=$(id -u b.anna),gid=$(id -g b.anna)
+
+# Dolphin link on Desktop
+cat > /home/b.anna/Desktop/Dolphin.desktop << 'EOF'
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Dolphin
+Comment=KDE File Manager
+Exec=dolphin
+Icon=system-file-manager
+Terminal=false
+Categories=System;FileTools;FileManager;
+EOF
+chmod +x /home/b.anna/Desktop/Dolphin.desktop
+chown b.anna:b.anna /home/b.anna/Desktop/Dolphin.desktop
+
 # Start XRDP services (sesman in background, xrdp in foreground)
 /usr/sbin/xrdp-sesman -n &
 exec /usr/sbin/xrdp -n
-
-

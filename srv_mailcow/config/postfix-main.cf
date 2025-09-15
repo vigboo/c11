@@ -4,3 +4,4 @@ smtp_use_tls = no
 smtpd_tls_security_level = none
 smtp_tls_security_level = none
 smtpd_tls_auth_only = no
+postscreen_access_list = permit_mynetworks
