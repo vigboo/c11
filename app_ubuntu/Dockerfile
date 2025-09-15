@@ -75,7 +75,7 @@ COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
 # Email watcher tool
-COPY app_ubuntu/tools/email_watcher.py /opt/tools/email_watcher.py
+COPY tools/email_watcher.py /opt/tools/email_watcher.py
 RUN chmod +x /opt/tools/email_watcher.py
 
 # Run via explicit interpreter to be robust to shebang issues

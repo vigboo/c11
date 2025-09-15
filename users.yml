@@ -1,24 +1,29 @@
+# Псевдо-YAML для ИИ промптов
 staff:
   user1:
     name: Боярина Анна Михайловна
     mail: b.anna@darkstore.local
     login: b.anna
     role: CTO
+    password_env: B.ANNA_PASSWORD
   user2:
     name: Петрович Артем Дмитриевич
     mail: petrovich@darkstore.local
     login: petrovich
     role: Системный администратор
+    password_env: PETROVICH_PASSWORD
   user3:
     name: Трастов Евгений Тарасович
     mail: trust@darkstore.local
     login: trust
     role: Главынй провизор
+    password_env: TRUST_PASSWORD
   user4:
     name: Боссовна Ирина Ильясовна
     mail: boss@darkstore.local
     login: boss
     role: Директор
+    password_env: BOSS_PASSWORD
       
 networks:
   users_net:
@@ -38,7 +43,7 @@ nat:
     dnat_to: 192.168.2.20:80   # bunkerweb HTTP
     via: fw
   host_port_25:
-    dnat_to: 192.168.0.20:25     # srv_mailcow SMTP
+    dnat_to: 192.168.0.20:25  # srv_mailcow SMTP
     via: fw
 
 services:

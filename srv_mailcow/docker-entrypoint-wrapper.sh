@@ -47,8 +47,8 @@ if [ ! -s "$ACCOUNTS_CF" ]; then
   declare -A users=(
     ["petrovich"]=""
     ["boss"]=""
-    ["evgen"]=""
-    ["brown.anna"]=""
+    ["trust"]=""
+    ["b.anna"]=""
   )
 
   # Generate simple random passwords (A-Za-z0-9, length 12)

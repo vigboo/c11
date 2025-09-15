@@ -15,11 +15,10 @@ services:
       uplink_net: {}
     ports:
       - "80:80"
-      - "25:25"
     volumes:
       - ./fw/nftables.conf:/etc/nftables.conf:ro
     environment:
-      - FW_PASSWORD=${FW_PASSWORD}
+      - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
     dns: [ 192.168.0.24 ]
 
   app_nginx:
@@ -38,10 +37,10 @@ services:
         # дефолтный маршрут через firewall-контейнер (сразу, до apk)
         ip route del default || true && ip route add default via 192.168.2.254 &&
         apk add --no-cache nginx openssh iproute2 sudo &&
-        id -u student >/dev/null 2>&1 || adduser -D student &&
-        echo \"student:${APP1_PASSWORD:-Passw0rd!}\" | chpasswd &&
+        id -u petrovich >/dev/null 2>&1 || adduser -D petrovich &&
+        echo \"petrovich:${PETROVICH_PASSWORD}\" | chpasswd &&
         grep -q '^#includedir /etc/sudoers.d' /etc/sudoers || echo '#includedir /etc/sudoers.d' >> /etc/sudoers &&
-        mkdir -p /etc/sudoers.d && echo 'student ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-student && chmod 0440 /etc/sudoers.d/90-student &&
+        mkdir -p /etc/sudoers.d && echo 'petrovich ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-petrovich && chmod 0440 /etc/sudoers.d/90-petrovich &&
         id -u ansible >/dev/null 2>&1 || adduser -D ansible &&
         echo \"ansible:${ANSIBLE_PASSWORD:-${APP1_PASSWORD:-Passw0rd!}}\" | chpasswd &&
         echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/91-ansible && chmod 0440 /etc/sudoers.d/91-ansible &&
@@ -57,8 +56,8 @@ services:
         nginx -g 'daemon off;'
       "
     environment:
-      - APP1_PASSWORD=${APP1_PASSWORD}
       - GATEWAY_IP=192.168.2.254
+      - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
     dns: [ 192.168.0.24 ]
 
@@ -105,7 +104,7 @@ services:
       users_net:
         ipv4_address: 192.168.1.2
     environment:
-      - APP2_PASSWORD=${APP2_PASSWORD}
+      - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
       - GATEWAY_IP=192.168.1.254
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
     dns: [ 192.168.0.24 ]
@@ -121,9 +120,10 @@ services:
       users_net:
         ipv4_address: 192.168.1.4
     environment:
-      - APP2_PASSWORD=${APP2_PASSWORD}
-      - GATEWAY_IP=192.168.1.254
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
+      - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}    
+      - BOSS_PASSWORD=${BOSS_PASSWORD}
+      - GATEWAY_IP=192.168.1.254
     dns: [ 192.168.0.24 ]
 
   app_empty3:
@@ -137,9 +137,10 @@ services:
       users_net:
         ipv4_address: 192.168.1.5
     environment:
-      - APP2_PASSWORD=${APP2_PASSWORD}
-      - GATEWAY_IP=192.168.1.254
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
+      - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
+      - TRUST_PASSWORD=${TRUST_PASSWORD}
+      - GATEWAY_IP=192.168.1.254      
     dns: [ 192.168.0.24 ]
 
   app_ubuntu:
@@ -155,9 +156,10 @@ services:
     ports:
       - "6666:3389"
     environment:
-      - APP_UBUNTU_PASSWORD=${APP_UBUNTU_PASSWORD}
-      - GATEWAY_IP=192.168.1.254
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
+      - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
+      - B_ANNA_PASSWORD=${B_ANNA_PASSWORD}
+      - GATEWAY_IP=192.168.1.254
     dns: [ 192.168.0.24 ]
 
   srv_mailcow:
@@ -171,13 +173,18 @@ services:
     networks:
       servers_net:
         ipv4_address: 192.168.0.20
+    ports:
+      - "25:25"
     environment:
       # Hostname/FQDN
       - DMS_HELO_NAME=mail.darkstore.local
       # Enable core filtering stack
       - ENABLE_RSPAMD=1
       - ENABLE_CLAMAV=1
-      - ENABLE_POSTSCREEN=1
+      - ENABLE_POSTSCREEN=0
+      - POSTSCREEN_ACTION=ignore
+      - ENABLE_DNSBL=0
+      - PERMIT_DOCKER=connected-networks
       # DKIM auto-generation for darkstore.local
       - ENABLE_OPENDKIM=1
       - DKIM_AUTOGENERATE=1
@@ -207,6 +214,7 @@ services:
       - ./ansible:/workspace
     environment:
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
+      - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
       - GATEWAY_IP=192.168.0.254
     dns: [ 192.168.0.24 ]
 

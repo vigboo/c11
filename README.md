@@ -52,8 +52,8 @@ SAMBA_PASSWORD=Passw0rd!
 SAMBA_SHARE_NAME=Share
 WAZUH_PASSWORD=Passw0rd!
 ```
-
-При необходимости добавьте SMTP/DNS и иные параметры соответствующим сервисам.
+Пароли учеток должны быть согласованы с хешами паролей почтовика srv_mailcow\config\postfix-accounts.cf
+(на текущий момент вручную надо сделать)
 
 ## Запуск
 

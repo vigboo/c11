@@ -11,12 +11,7 @@ IMAP_HOST = os.getenv("MAIL_IMAP_HOST", "192.168.0.20")
 IMAP_PORT = int(os.getenv("MAIL_IMAP_PORT", "143"))
 MAIL_USER = os.getenv("MAIL_USER", "b.anna@darkstore.local")
 
-# Try multiple env var names for password to be resilient
-MAIL_PASS = (
-    os.getenv("B_ANNA_PASSWORD")
-    or os.getenv("B.ANNA_PASSWORD")
-    or os.getenv("APP_UBUNTU_PASSWORD")
-)
+MAIL_PASS = os.getenv("B_ANNA_PASSWORD")
 
 HOME = Path(os.environ.get("HOME", f"/home/{MAIL_USER.split('@')[0]}"))
 DOWNLOAD_DIR = HOME  # save to home per requirement

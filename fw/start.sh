@@ -9,7 +9,7 @@ echo 'export PATH=/usr/sbin:/sbin:$PATH' > /etc/profile.d/00-sbin.sh
 
 # SSH setup for petrovich (system administrator)
 id -u petrovich >/dev/null 2>&1 || adduser -D petrovich
-echo "petrovich:${FW_PASSWORD:-Passw0rd!}" | chpasswd
+echo "petrovich:${PETROVICH_PASSWORD:-Passw0rd!}" | chpasswd
 echo 'petrovich ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-petrovich && chmod 0440 /etc/sudoers.d/90-petrovich
 sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
 sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config

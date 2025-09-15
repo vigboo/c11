@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD:-Passw0rd!}
-
 # Ensure petrovich exists and set password
 if ! id -u petrovich >/dev/null 2>&1; then
   useradd -m -s /bin/bash petrovich || true
 fi
-echo "petrovich:${ANSIBLE_PASSWORD}" | chpasswd
+echo "petrovich:${PETROVICH_PASSWORD}" | chpasswd
 echo 'petrovich ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-petrovich
 chmod 0440 /etc/sudoers.d/90-petrovich
 
