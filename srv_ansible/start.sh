@@ -18,7 +18,7 @@ echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/91-ansible
 chmod 0440 /etc/sudoers.d/91-ansible
 
 # Default route via firewall
-GATEWAY_IP=${GATEWAY_IP:-192.168.0.1}
+GATEWAY_IP=${GATEWAY_IP}
 ip route del default || true
 ip route add default via "$GATEWAY_IP" || true
 

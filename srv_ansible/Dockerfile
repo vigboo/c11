@@ -14,11 +14,6 @@ RUN apt-get update \
     ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
-# Create user student with sudo
-RUN useradd -m -s /bin/bash student \
- && echo "student ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/90-student \
- && chmod 0440 /etc/sudoers.d/90-student
-
 EXPOSE 22
 
 COPY start.sh /usr/local/bin/start.sh
