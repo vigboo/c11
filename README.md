@@ -111,7 +111,7 @@ WAZUH_PASSWORD=Passw0rd!
 - Пароли/секреты храните в `.env` (в Git не попадает). Для примеров создайте `example.env` без чувствительных значений.
 
 ## Полезные команды
-
+- Синхронизация паролей в .env -> /srv_mailcow/postfix-accounts.cf выполняется запуском password_sync_with_postfix.py
 - Логи сервиса: `docker compose logs -f <service>`
 - Инспект сети: `docker network inspect <network>`
 - Маршруты внутри контейнера: `docker exec <service> ip route`

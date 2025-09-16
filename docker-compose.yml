@@ -207,7 +207,7 @@ services:
   srv_ansible:
     depends_on: [ fw ]
     build: ./srv_ansible
-    container_name: srv_ansible
+    container _name: srv_ansible
     cap_add: [ "NET_ADMIN" ]
     restart: always
     networks:
