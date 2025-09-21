@@ -27,15 +27,7 @@ if [ -f /etc/nftables.conf ]; then
   fi
 fi
 
-# Ensure default route goes via the uplink (interface with 172.x address)
-upline=$(ip -o -4 addr show | awk '/\binet 172\./{print $2, $4; exit}') || true
-if [ -n "$upline" ]; then
-  intf=$(echo "$upline" | awk '{print $1}')
-  ipcidr=$(echo "$upline" | awk '{print $2}')
-  ip=$(echo "$ipcidr" | cut -d/ -f1)
-  gw=$(echo "$ip" | awk -F. '{printf "%s.%s.%s.1\n", $1,$2,$3}')
-  ip route replace default via "$gw" dev "$intf" || true
-fi
+
 
 # Keep running
 exec /usr/sbin/sshd -D
