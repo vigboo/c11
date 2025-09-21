@@ -27,6 +27,7 @@ RUN apt-get update \
     python3 python3-venv python3-pip \
     p7zip-full \
     cron \
+    zip \
  && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome (Chromium-based) from official repo

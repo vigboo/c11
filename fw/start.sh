@@ -16,18 +16,46 @@ sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
 mkdir -p /run/sshd
 ssh-keygen -A
 
-# Load nftables rules. Convert CRLF if mounted from Windows.
-if [ -f /etc/nftables.conf ]; then
-  tr -d '\r' < /etc/nftables.conf > /tmp/nft.conf
-  if ! nft -f /tmp/nft.conf; then
-    echo "nftables load failed -> falling back to iptables permissive routing" >&2
-    # permissive fallback: allow forward and basic NAT on last iface (uplink)
-    iptables -P FORWARD ACCEPT
-    iptables -t nat -C POSTROUTING -o eth3 -j MASQUERADE 2>/dev/null || iptables -t nat -A POSTROUTING -o eth3 -j MASQUERADE
+# Rename interfaces to stable names by subnet (нужно чтобы обеспечить стабильность привязки названий интерфейсов подсетям)
+#  - 192.168.99.2/24  -> eth_nat
+#  - 192.168.1.0/24 -> eth_users
+#  - 192.168.2.0/24 -> eth_dmz
+#  - 192.168.0.0/24 -> eth_servers
+echo "[fw] Renaming interfaces by subnet..."
+# Collect non-loopback IPv4 interfaces
+while read -r line; do
+  dev=$(echo "$line" | awk '{print $2}')
+  cidr=$(echo "$line" | awk '{print $4}')
+  [ "$dev" = "lo" ] && continue
+  ip=${cidr%/*}
+  # Derive /24 subnet x.y.z.0/24
+  subnet=$(echo "$ip" | awk -F. '{printf "%s.%s.%s.0/24\n", $1,$2,$3}')
+  new=""
+  case "$subnet" in
+    192.168.99.0/24)   new="eth_nat"  ;;
+    192.168.1.0/24)  new="eth_users"  ;;
+    192.168.2.0/24)  new="eth_dmz" ;;
+    192.168.0.0/24)  new="eth_servers" ;;
+  esac
+  [ -z "$new" ] && continue
+  [ "$dev" = "$new" ] && continue
+  # Skip if target name is already taken
+  if ip link show "$new" >/dev/null 2>&1; then
+    echo "[fw] Target name '$new' already exists, skipping $dev"
+    continue
   fi
-fi
+  echo "[fw] renaming $dev ($cidr) -> $new"
+  ip link set dev "$dev" down || true
+  ip link set dev "$dev" name "$new" || true
+  ip link set dev "$new" up || true
+done < <(ip -o -4 addr show)
 
+# Задаем дефолтный маршрут на Docker
+ip route add default via 192.168.99.254 dev eth_nat || true
+echo "Set default route via 192.168.99.254 / eth_nat"
 
+# Load nftables rules
+nft -f /etc/nftables.conf
 
 # Keep running
 exec /usr/sbin/sshd -D

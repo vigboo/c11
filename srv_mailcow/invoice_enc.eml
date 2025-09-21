@@ -1,0 +1,64 @@
+Return-Path: <marketing@promo-ads.biz>
+Delivered-To: user1@mail.test.lab-seg.local
+Received: from promo-server.biz (unknown [27.50.63.55])
+	by relay.example.local (Postcow) with SMTP id FAKE1234
+	for <user1@mail.test.lab-seg.local>; Sun, 21 Jul 2025 14:30:00 +0200
+Date: Sun, 21 Jul 2025 12:30:00 +0000
+From: "Promo Bot" <marketing@promo-ads.biz>
+To: user1@mail.test.lab-seg.local
+Subject: 🔥 Limited Time Offer!
+MIME-Version: 1.0
+Content-Language: ru
+X-Mailer: lab-mail 1.0
+Organization: darkstore.local
+Content-Type: multipart/mixed; boundary="b-outer-4872"
+
+--b-outer-4872
+Content-Type: multipart/alternative; boundary="b-alt-4872"
+
+--b-alt-4872
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Здравствуйте!
+
+Повторно направляем счёт на оплату №4872 от 19 июля 2025 года.
+Для защиты ваших данных вложенный архив защищён паролем.
+пароль: infected
+
+Пожалуйста, ознакомьтесь с документом и произведите оплату.
+
+С уважением,
+Финансовый отдел
+darkstore.local
+
+--b-alt-4872
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+  <body>
+    <p>Здравствуйте!</p>
+    <p>Повторно направляем счёт на оплату №4872 от 19 июля 2025 года.</p>
+    <p>Для защиты ваших данных вложенный архив защищён паролем.<br>
+       <strong>пароль: infected</strong></p>
+    <p>Пожалуйста, ознакомьтесь с документом и произведите оплату.</p>
+    <p>С уважением,<br>Финансовый отдел<br>darkstore.local</p>
+  </body>
+  </html>
+
+--b-alt-4872--
+
+--b-outer-4872
+Content-Type: application/zip; name="invoice.zip"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="invoice.zip"
+Content-Description: Invoice 4872 (password-protected)
+
+UEsDBBQACAAIAPxwZVQAAAAAAAAAAAAAAAAQAAAByZWFkbWUudHh0CkRvY3VtZW50OiBJbnZvaWNl
+ICM0ODcyCgolIFBhc3N3b3JkIGZvciBhcmNoaXZlOiBpbmZlY3RlZAoKUEsBAhQAFAAIAAgA/HBl
+VAAAAAAAAAAAAAAAAAEAAAAQAAAAAAAAAAAAAACkgQAAAAByZWFkbWUudHh0UEsFBgAAAAABAAEA
+QQAAAHcAAAAAAA==
+
+--b-outer-4872--
+

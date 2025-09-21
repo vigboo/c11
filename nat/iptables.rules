@@ -1,0 +1,22 @@
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+# DNAT host-published ports on uplink (eth0) to firewall on nat_net
+-A PREROUTING -i eth0 -p tcp -j DNAT --to-destination 192.168.99.2
+# Masquerade any traffic going out to uplink
+-A POSTROUTING -o eth0 -j MASQUERADE
+COMMIT
+
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+# Allow established
+-A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+# Allow nat_net <-> uplink both ways
+-A FORWARD -i eth1 -o eth0 -j ACCEPT
+-A FORWARD -i eth0 -o eth1 -j ACCEPT
+COMMIT
+
