@@ -1,0 +1,49 @@
+From: billing@finance-invoicer.net
+To: user1@mail.test.lab-seg.local
+Subject: Счет на оплату #4872 (повторно)
+Date: Sun, 20 Sep 2025 18:00:00 +0300
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============boundary=="
+--===============boundary==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Здравствуйте еще раз!
+В прошлом инвойсе был вирус, поэтому направляем повторно. Извините.
+К данному письму прилагается счет на оплату №4872 от 19 июля 2025 года.
+Для защиты ваших данных файл архива защищен паролем.
+пароль: infected
+
+Пожалуйста, ознакомьтесь с документом и произведите оплату в ближайшее время.
+
+С уважением,
+Финансовый отдел
+finance-invoicer.net
+
+--===============boundary==
+Content-Disposition: attachment;
+	filename="invoice.zip"
+Content-Transfer-Encoding: base64
+Content-Type: application/zip;
+	name="invoice.zip"
+
+UEsDBBQAAQBjABqPNVt4DV9SZAAAAEYAAAAJAAsAZWljYXIudHh0AZkHAAEAQUUDCAB6rpJjKTmW
+rw7YX3RCyBb6u1CSR5akgJZGt8KtxaHl2f8z20wK7AhIKiXe6mr7GNKHAcngQeEWxqQ6iSsUaFNm
+MXeZENI8greZum2Vadg93cHbifDPu1bWUrw3OlXIDPz/vae9UEsDBBQAAQBjAJGQNVvFV6ykmAIA
+AMAEAAAIAAsAYWdlbnQucHkBmQcAAQBBRQMIABlEJ+lweupLkYAGBTs1i6imLKuK71bpEYhcvAVs
+DQbHOKHrm6bEImrpGlSW05dzhgW+eEpcS5QvciwuQy+LPcCbxxLqu33xprmTAdXQdTNll6OGjp1L
+fkcaXhqA0kE7ZOFSdH1MeHpHA0J0JqX4Vpg2BQLfWOU1wkurz/dLHLASL4sBj6JrQCCo5+iMXomT
+uKpyMokTxZthJ29jOsUrTZVllKaeWR3L33vmskl0WBSYs7ShnzOY5Au59h4/5ZBrpnMLRFTZX3AB
+izJrnwdy0FSxzSG690oPwX9SyCsgzhGFShPKL7BA+vVnenQ3Df8mk+IPyf+eCfZ8+R9VxhCJGgK4
+rG6N2yN9iYmFcyrpVqjZDyKEmO4oNLQWwx5lWAe3HhcSjiLvkKcyKBzrDbeLpKvNKyFi60MGmU5x
+vUATtlB99lJ3vLvXKrEkf8MM+KxUj80D8cOBdykRyYe+r6wYFvoUrrbnfUmIFeW1mILZxVvffgzK
+Z+NG3hX1WMpVlI1Mq3EP/CS7/1JdwN67uUZqiXhWyoHbzhrRk84phKumYtAEog/OEtzfvzmEmPa1
+UmtPHU+Dk99BeG5OwNIWpRwPZ1Bsml55AsxtocUvGiSMqfcgkJhaTLOeuRZdCF1KnkoLyRSggSem
+R5jfCBuJkUpegdJA/K2ECBIGP5l12F/35ExU2uRLkgKtKo9v89YWqiS0Y54Hfa9CPUjFKqEbibgh
+/AEIVgGP9BQYnv0t4n8RpeREpkaeJgqZ8wODs8+sNhjfp3hikesBjtLUolnNdyyHoKOXMnV29VBe
+zd5c1Egtbl4UIovdg4Gju9HIyCWIH3VmMGkEeT/bi/qhh6LFdC7o1mnr0R5I/ubUSrnUc0hQzmTG
+U+Hw9Hn/UtFQSwECFAAUAAEAYwAajzVbeA1fUmQAAABGAAAACQALAAAAAAAAAAAAtoEAAAAAZWlj
+YXIudHh0AZkHAAEAQUUDCABQSwECFAAUAAEAYwCRkDVbxVespJgCAADABAAACAALAAAAAAAAAAAA
+toGWAAAAYWdlbnQucHkBmQcAAQBBRQMIAFBLBQYAAAAAAgACAIMAAABfAwAAAAA=
+--===============boundary==
+

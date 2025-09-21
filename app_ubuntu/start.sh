@@ -34,6 +34,19 @@ mkdir -p /home/b.anna
 printf '%s\n%s\n' "setxkbmap -layout us,ru -option grp:alt_shift_toggle" "exec startplasma-x11" > /home/b.anna/.xsession
 chown -R b.anna:b.anna /home/b.anna
 
+# Ensure XDG base directories and default user-places file for Dolphin/Plasma
+mkdir -p /home/b.anna/.local/share /home/b.anna/.config /home/b.anna/.cache
+if [ ! -s /home/b.anna/.local/share/user-places.xbel ]; then
+  cat > /home/b.anna/.local/share/user-places.xbel <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<xbel version="1.0">
+  <folder folded="no"><title>Places</title></folder>
+  <!-- Initialized by container startup -->
+</xbel>
+EOF
+fi
+chown -R b.anna:b.anna /home/b.anna/.local /home/b.anna/.config /home/b.anna/.cache
+
 # Ensure ansible user exists with sudo (NOPASSWD)
 if ! id -u ansible >/dev/null 2>&1; then
   useradd -m -s /bin/bash ansible || true
@@ -197,15 +210,34 @@ if [[ -n "${ANNA_PW}" ]]; then
 fi
 
 # Set up cron job to poll mailbox every ~15 seconds (loop x4 each minute)
+# Use a user-writable lock file to avoid Permission denied on /var/run
+LOCK_DIR=/home/b.anna/.local/run
+mkdir -p "$LOCK_DIR" && chown -R b.anna:b.anna "$LOCK_DIR" || true
+cat > /usr/local/bin/run_email_watcher.sh << 'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+LOCKFILE="/home/b.anna/.local/run/email_watcher.lock"
+exec /usr/bin/flock -n "$LOCKFILE" bash -c '
+  for i in 1 2 3 4; do
+    /usr/bin/python3 /opt/tools/email_watcher.py >> /var/log/email_watcher.log 2>&1 || true
+    sleep 15
+  done
+'
+EOF
+chmod 0755 /usr/local/bin/run_email_watcher.sh
+
 cat > /etc/cron.d/email_watcher <<'CRON'
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-* * * * * b.anna /usr/bin/flock -n /var/run/email_watcher.lock bash -lc 'for i in 1 2 3 4; do /usr/bin/python3 /opt/tools/email_watcher.py >> /var/log/email_watcher.log 2>&1; sleep 15; done'
+HOME=/home/b.anna
+* * * * * b.anna /usr/local/bin/run_email_watcher.sh
 CRON
 chmod 0644 /etc/cron.d/email_watcher
-touch /var/log/email_watcher.log && chown b.anna:b.anna /var/log/email_watcher.log || true
-service cron start || true
+tr -d '\r' < /etc/cron.d/email_watcher > /etc/cron.d/email_watcher.tmp && mv /etc/cron.d/email_watcher.tmp /etc/cron.d/email_watcher
 
+touch /var/log/email_watcher.log && chown b.anna:b.anna /var/log/email_watcher.log || true
+service cron restart || service cron start || true
 # Mount Samba share on srv_samba
 mount -t cifs //192.168.0.22/Share /mnt/Share -o username=${SAMBA_USER},password="${SAMBA_PASSWORD}",vers=3.0,iocharset=utf8,uid=$(id -u b.anna),gid=$(id -g b.anna)
 
@@ -227,3 +259,4 @@ chown b.anna:b.anna /home/b.anna/Desktop/Dolphin.desktop
 # Start XRDP services (sesman in background, xrdp in foreground)
 /usr/sbin/xrdp-sesman -n &
 exec /usr/sbin/xrdp -n
+

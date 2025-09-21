@@ -1,0 +1,32 @@
+Return-Path: <suspicious@unknown.net>
+Delivered-To: user1@mail.test.lab-seg.local
+Received: from bad-sender.unknown.net (unknown [185.123.45.67])
+	by relay.example.local (Postcow) with SMTP id ABCD1234
+	for <user1@mail.test.lab-seg.local>; Sun, 21 Jul 2025 13:10:00 +0200
+Date: Sun, 21 Jul 2025 11:10:00 +0000
+From: "IT Security Team" <suspicious@unknown.net>
+To: user1@mail.test.lab-seg.local
+Subject: ⚠️ Срочное обновление безопасности
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="BOUNDARY"
+
+--BOUNDARY
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Пожалуйста, установите это важное обновление для вашей системы.
+
+--BOUNDARY
+Content-Type: application/octet-stream; name="stub.exe"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="stub.exe"
+
+TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9T
+IG1vZGUuDQ0KJAAAAAAAAABQRQAATAEDAMM4YnQAAAAAAAAAAOAADwELAQsAAACAAAACAAEAAABAAAAA
+AAAAgAAAAAAAgAAAAAAAABAAAAAAAAAAEAAAAAAAAAAAAAAAEAAAEAAgAAAAAAAAAAAAAAEgAAAgAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+==
+
+--BOUNDARY--

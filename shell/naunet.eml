@@ -1,0 +1,24 @@
+Return-Path: <hacker@naunet.ru>
+Delivered-To: user1@mail.test.lab-seg.local
+Received: from spamserver.naunet.ru ([203.0.113.55])
+	by test.lab-seg.local (Postcow) with SMTP id A1B2C3D4
+	for <user1@mail.test.lab-seg.local>; Sun, 21 Jul 2025 14:32:01 +0200 (CEST)
+Date: Sun, 21 Jul 2025 12:32:01 +0000
+From: "Trusted Bank" <hacker@naunet.ru>
+To: user1@mail.test.lab-seg.local
+Subject: Urgent Account Update Required
+Message-ID: <fake123456@naunet.ru>
+MIME-Version: 1.0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<html>
+<body>
+<p>Dear customer,</p>
+<p>We've noticed unusual activity in your bank account.</p>
+<p><b>Please verify your account</b> by clicking the link below:</p>
+<p><a href="http://phishing.naunet.ru/login">Click here to verify</a></p>
+<p>Failure to act will result in account suspension.</p>
+<p>Sincerely,<br>Trusted Bank Security Team</p>
+</body>
+</html>

@@ -1,0 +1,32 @@
+From: billing@finance-invoicer.net
+To: user1@mail.test.lab-seg.local
+Subject: Счет на оплату #4872 (повторно)
+Date: Sun, 20 Sep 2025 18:00:00 +0300
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============boundary=="
+--===============boundary==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Здравствуйте еще раз!
+В прошлом инвойсе был вирус, поэтому направляем повторно. Извините.
+К данному письму прилагается счет на оплату №4872 от 19 июля 2025 года.
+Для защиты ваших данных файл архива защищен паролем.
+пароль: infected
+
+Пожалуйста, ознакомьтесь с документом и произведите оплату в ближайшее время.
+
+С уважением,
+Финансовый отдел
+finance-invoicer.net
+
+--===============boundary==
+Content-Disposition: attachment;
+	filename="invoice.zip"
+Content-Transfer-Encoding: base64
+Content-Type: application/zip;
+	name="invoice.zip"
+
+XXX
+--===============boundary==
+

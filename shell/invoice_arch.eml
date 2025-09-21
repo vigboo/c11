@@ -1,0 +1,34 @@
+From: billing@finance-invoicer.net
+To: user1@mail.test.lab-seg.local
+Subject: Счет на оплату #4872
+Date: Sun, 20 Jul 2025 18:00:00 +0300
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============boundary=="
+
+--===============boundary==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Здравствуйте!
+
+К данному письму прилагается счет на оплату №4872 от 19 июля 2025 года.
+
+Пожалуйста, ознакомьтесь с документом и произведите оплату в ближайшее время.
+
+С уважением,
+Финансовый отдел
+finance-invoicer.net
+
+--===============boundary==
+Content-Disposition: attachment;
+	filename="invoice.zip"
+Content-Transfer-Encoding: base64
+Content-Type: application/x-rar;
+	name="invoice.zip"
+
+UEsDBBQACAAIAKlq81oAAAAAAAAAAAAAAAAJACAAZWljYXIudHh0dXgLAAEEAAAAAAQAAAAAVVQN
+AAeuf3todSF9aKh/e2iLMPVXDFB1cAyINokJiIowNdEIiNM0d3bWNK9VcfV0dgzSDQ5x9HNxDHLR
+dfQL8QzzDAoN1g1xDQ7RdfP0cVVU8dD20AIAUEsHCDzPUWhGAAAARAAAAFBLAQIUAxQACAAIAKlq
+81o8z1FoRgAAAEQAAAAJABgAAAAAAAAAAAC2gQAAAABlaWNhci50eHR1eAsAAQQAAAAABAAAAABV
+VAUAAa5/e2hQSwUGAAAAAAEAAQBPAAAAnQAAAAAA
+--===============boundary==

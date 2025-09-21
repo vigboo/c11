@@ -1,0 +1,23 @@
+Received: by vps121777.inmotionhosting.com (Postfix, from userid 1012) id 15D97777FA; Fri,
+  4 Apr 2025 01:58:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=llwconsulting.net; s=default; t=1743757129; bh=KERb7T3cdX5L0Xjzn4fgpLzr8DOIVFsIoalzV3ujRwE=; h=To:Subject:Date:From:Reply-To; b=nWFAwjvsl5giqMd/B6Zsuae3FvR2u3pV2Gal/bWoDcmFKKe9dD2K7Pw03v4LW+9xL
+	 ZeOtQ3Du4LRrA6CaIN2QXJ+8i2NzQ+FY+MPHvlR+EM5LwwTQfUKkG6UrWyWSXhD0WF
+	 oPWySpmiliXuNL1kWXBZlGj966x/bdKzGXqZ/OsU=
+Return-Path: <llw@llwconsulting.net>
+To: user1@mail.test.lab-seg.local
+Subject: Copy of: Мы с радостью сообщаем вам, что ваша активность на OZON не осталась незамеченной. В благодарность за ваше доверие и выбор нашего сервиса, вы были выбраны для участия в специальной акции: www.tinyurl.com/273cns6t
+X-PHP-Originating-Script: 1012:class.phpmailer.php
+Date: Fri, 4 Apr 2025 08:58:49 +0000
+From: "LLW Consulting, Inc. - Pharmacy Consulting Services" <llw@llwconsulting.net>
+Reply-To: "Мы пытались дозвонится до вас, чтобы вручить эксклюзивное приглашение на наш грандиозный розыгрыш призов, но, к сожалению, не смогли несколько раз дозвонится до вас... Это ваше последнее уведомление: если вы не подтвердите своё участие в ближайшее время, вы рискуете упустить шанс на выигрыш потрясающих призов: www.tinyurl.com/273cns6t" <user1@mail.test.lab-seg.local>
+Message-ID: <1a51a9ca84844ada1c48f6dfc3c5f606@llwconsulting.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+This is a copy of the following message you sent to  LLW Consulting, Inc.  via LLW Consulting, Inc. - Pharmacy Consulting Services
+
+This is an enquiry email via https://llwconsulting.com/ from:
+Мы пытались дозвонится до вас, чтобы вручить эксклюзивное приглашение на наш грандиозный розыгрыш призов, но, к сожалению, не смогли несколько раз дозвонится до вас... Это ваше последнее уведомление: если вы не подтвердите своё участие в ближайшее время, вы рискуете упустить шанс на выигрыш потрясающих призов: www.tinyurl.com/273cns6t <user1@mail.test.lab-seg.local>
+
+Мы рады сообщить вам отличную новость — вы были выбраны для участия в эксклюзивной акции от OZON. Среди наших клиентов вы стали одним из немногих, кому выпала возможность побороться за невероятные призы: www.tinyurl.com/273cns6t
