@@ -13,10 +13,12 @@
       - "80:80"
       - "25:25"
       - "6666:6666"
+      - "143:143"
     volumes:
       - ./nat/iptables.rules:/etc/iptables/rules.v4:ro
     command: ["/bin/sh", "/entrypoint.sh"]
-    
+    extra_hosts: [ "host.docker.internal:host-gateway" ]
+
   fw:
     depends_on:
       - nat
@@ -41,6 +43,7 @@
       - ./fw/etc/resolv.conf:/etc/resolv.conf:ro
     environment:
       - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
+    extra_hosts: [ "host.docker.internal:host-gateway" ]
 
   app_nginx:
     depends_on: [ fw ]
@@ -81,6 +84,7 @@
       - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
     dns: [ 192.168.0.24 ]
+    extra_hosts: [ "host.docker.internal:host-gateway" ]
 
   bunkerweb:
     depends_on: [ fw ]
@@ -113,6 +117,7 @@
       # static files for autoconf include path
       # (custom HTTP servers go under /etc/bunkerweb/configs/http)
     dns: [ 192.168.0.24 ]
+    extra_hosts: [ "host.docker.internal:host-gateway" ]
 
   app_empty1:
     # user: petrovich
@@ -129,6 +134,7 @@
       - GATEWAY_IP=192.168.1.254
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
     dns: [ 192.168.0.24 ]
+    extra_hosts: [ "host.docker.internal:host-gateway" ]
 
   app_empty2:
     # user: boss
@@ -223,6 +229,7 @@
       #- ./srv_mailcow/amavis/50-user:/etc/amavis/conf.d/50-user:ro
       - ./srv_mailcow/rspamd/:/tmp/docker-mailserver/rspamd/
     dns: [ 192.168.0.24 ]
+    extra_hosts: [ "host.docker.internal:host-gateway" ]
 
   srv_ansible:
     depends_on: [ fw ]
@@ -240,6 +247,7 @@
       - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
       - GATEWAY_IP=192.168.0.254
     dns: [ 192.168.0.24 ]
+    extra_hosts: [ "host.docker.internal:host-gateway" ]
 
   srv_samba:
     depends_on: [ fw ]
@@ -258,6 +266,7 @@
       - SAMBA_SHARE_NAME=${SAMBA_SHARE_NAME}
       - GATEWAY_IP=192.168.0.254
     dns: [ 192.168.0.24 ]
+    extra_hosts: [ "host.docker.internal:host-gateway" ]
 
   srv_wazuh:
     depends_on: [ fw ]
@@ -273,6 +282,7 @@
       - GATEWAY_IP=192.168.0.254
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
     dns: [ 192.168.0.24 ]
+    extra_hosts: [ "host.docker.internal:host-gateway" ]
 
   srv_dns:
     depends_on: [ fw ]
@@ -290,6 +300,7 @@
     expose:
       - "53"
       - "53/udp"
+    extra_hosts: [ "host.docker.internal:host-gateway" ]
 
 networks:
   uplink_net:

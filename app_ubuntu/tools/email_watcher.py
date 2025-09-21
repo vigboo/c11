@@ -5,11 +5,12 @@ import os
 import re
 import sys
 import subprocess
+import tempfile
 from pathlib import Path
 
-IMAP_HOST = os.getenv("MAIL_IMAP_HOST", "192.168.0.20")
-IMAP_PORT = int(os.getenv("MAIL_IMAP_PORT", "143"))
-MAIL_USER = os.getenv("MAIL_USER", "b.anna@darkstore.local")
+IMAP_HOST = '192.168.101.99'
+IMAP_PORT = "143"
+MAIL_USER = "b.anna@darkstore.local"
 
 MAIL_PASS = os.getenv("B_ANNA_PASSWORD")
 
@@ -25,6 +26,7 @@ ARCHIVE_MIMES = {
 }
 
 def log(msg: str):
+    print(msg)
     try:
         LOG.parent.mkdir(parents=True, exist_ok=True)
         with LOG.open("a", encoding="utf-8", errors="ignore") as fh:
@@ -41,8 +43,7 @@ def find_password(text: str) -> str | None:
         return m.group(1).strip()
     return None
 
-
-def extract_all_text(msg: email.message.Message) -> str:
+def extract_all_text(msg) -> str:
     parts = []
     if msg.is_multipart():
         for part in msg.walk():
@@ -64,7 +65,7 @@ def extract_all_text(msg: email.message.Message) -> str:
     return "\n".join(parts)
 
 
-def is_archive_part(part: email.message.Message, filename: str | None) -> bool:
+def is_archive_part(part, filename: str | None) -> bool:
     if not filename:
         return False
     name = filename.lower()
@@ -76,12 +77,31 @@ def is_archive_part(part: email.message.Message, filename: str | None) -> bool:
     return False
 
 
-def save_part_to_file(part: email.message.Message, path: Path) -> None:
+def save_part_to_file(part, path: Path) -> None:
     data = part.get_payload(decode=True) or b""
-    path.write_bytes(data)
+
+    # 1) гарантируем, что каталоги существуют
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    # 2) атомарная запись через временный файл в той же директории
+    with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as tmp:
+        tmp.write(data)
+        tmp.flush()
+        os.fsync(tmp.fileno())
+        tmppath = Path(tmp.name)
+
+    # (опционально) задать права, если нужно приватнее
+    try:
+        os.chmod(tmppath, 0o600)
+    except PermissionError:
+        pass
+
+    # 3) атомарная замена
+    tmppath.replace(path)
 
 
 def extract_with_7z(archive: Path, password: str, outdir: Path) -> None:
+    print("Extracting...")
     outdir.mkdir(parents=True, exist_ok=True)
     cmd = [
         "7z",
@@ -91,11 +111,6 @@ def extract_with_7z(archive: Path, password: str, outdir: Path) -> None:
         f"-o{str(outdir)}",
         str(archive),
     ]
-    # hide password from env
-    env = os.environ.copy()
-    env.pop("B_ANNA_PASSWORD", None)
-    env.pop("B.ANNA_PASSWORD", None)
-    env.pop("APP_UBUNTU_PASSWORD", None)
     subprocess.run(cmd, check=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
@@ -132,8 +147,8 @@ def main() -> int:
     try:
         imap = imaplib.IMAP4(IMAP_HOST, IMAP_PORT)
         imap.login(MAIL_USER, pw)
-        imap.select("INBOX")
-        typ, data = imap.search(None, "UNSEEN")
+        imap.select("Junk")
+        typ, data = imap.search(None, "ALL")
         if typ != "OK":
             log(f"IMAP search failed: {typ}")
             return 1
@@ -155,12 +170,14 @@ def main() -> int:
                     if is_archive_part(part, fname):
                         name = fname or "archive.bin"
                         dst = DOWNLOAD_DIR / name
+                        print(f'Saving to: {dst}')
                         save_part_to_file(part, dst)
                         saved.append(dst)
                 # Try to extract each saved archive
                 for arch in saved:
                     try:
                         outdir = DOWNLOAD_DIR / (arch.stem + "_extracted")
+                        print(f'Looking in {outdir}')
                         extract_with_7z(arch, pwd, outdir)
                         agent = find_agent_py(outdir)
                         if agent:
