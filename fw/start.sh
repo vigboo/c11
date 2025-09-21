@@ -50,7 +50,7 @@ while read -r line; do
   ip link set dev "$new" up || true
 done < <(ip -o -4 addr show)
 
-# Задаем дефолтный маршрут на Docker
+# Задаем дефолтный маршрут на NAT
 ip route add default via 192.168.99.254 dev eth_nat || true
 echo "Set default route via 192.168.99.254 / eth_nat"
 

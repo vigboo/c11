@@ -1,4 +1,22 @@
 ﻿services:
+  nat:
+    build: ./nat
+    container_name: nat
+    cap_add: [ "NET_ADMIN" ]
+    restart: always
+    networks:
+      uplink_net:
+        ipv4_address: 172.19.0.2
+      nat_net:
+        ipv4_address: 192.168.99.254
+    ports:
+      - "80:80"
+      - "25:25"
+      - "6666:6666"
+    volumes:
+      - ./nat/iptables.rules:/etc/iptables/rules.v4:ro
+    command: ["/bin/sh", "/entrypoint.sh"]
+    
   fw:
     depends_on:
       - nat
@@ -23,25 +41,6 @@
       - ./fw/etc/resolv.conf:/etc/resolv.conf:ro
     environment:
       - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
-
-  nat:
-    build: ./nat
-    container_name: nat
-    cap_add: [ "NET_ADMIN" ]
-    restart: always
-    networks:
-      uplink_net:
-        ipv4_address: 172.19.0.2
-      nat_net:
-        ipv4_address: 192.168.99.254
-    ports:
-      - "80:80"
-      - "25:25"
-      - "6666:6666"
-    volumes:
-      - ./nat/iptables.rules:/etc/iptables/rules.v4:ro
-    command: ["/bin/sh", "/entrypoint.sh"]
-    dns: [ 192.168.0.24 ]
 
   app_nginx:
     depends_on: [ fw ]
