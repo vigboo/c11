@@ -69,7 +69,7 @@
 
   srv_bunkerweb:
     depends_on: [ fw ]
-    image: bunkerity/bunkerweb:latest
+    image:  bunkerity/bunkerweb-all-in-one:latest
     container_name: srv_bunkerweb
     cap_add: [ "NET_ADMIN" ]
     user: root
@@ -78,7 +78,7 @@
       dmz_net:
         ipv4_address: 192.168.2.20
     environment:
-      # Basic reverse-proxy to app_nginx
+      # Basic reverse-proxy to webserver
       # Single-site: map localhost to backend via WAF
       - MULTISITE=no
       - SERVER_NAME=localhost 127.0.0.1 darkstore.local _
@@ -94,6 +94,7 @@
       - RATE_LIMIT_BURST=50
       - RATE_LIMIT_PERIOD=1s
       - GATEWAY_IP=192.168.2.254
+      - SERVICE_UI=yes
     volumes:
       - ./srv_bunkerweb/conf:/etc/bunkerweb
       - ./srv_bunkerweb/data:/var/lib/bunkerweb

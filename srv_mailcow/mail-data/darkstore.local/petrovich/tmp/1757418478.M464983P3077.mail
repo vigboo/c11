@@ -1,0 +1,16 @@
+Return-Path: <root@mail.darkstore.local>
+Delivered-To: petrovich@darkstore.local
+Received: from mail.darkstore.local
+	by mail.darkstore.local with LMTP
+	id AKmkG+4TwGgFDAAAOnVOhw
+	(envelope-from <root@mail.darkstore.local>)
+	for <petrovich@darkstore.local>; Tue, 09 Sep 2025 11:47:58 +0000
+Received: by mail.darkstore.local (Postfix, from userid 0)
+	id 690D96A40F; Tue,  9 Sep 2025 11:47:58 +0000 (UTC)
+From: tester@darkstore.local
+To: petrovich@darkstore.local
+Subject: Test via container
+Message-Id: <20250909114758.690D96A40F@mail.darkstore.local>
+Date: Tue,  9 Sep 2025 11:47:58 +0000 (UTC)
+
+Hello from docker exec.
