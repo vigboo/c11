@@ -27,6 +27,13 @@
       when: is_alpine == 'false'
 
   tasks:
+    - name: Создать пустой файл
+      file:
+        path: /tmp/check
+        state: touch
+        owner: root
+        group: root
+        mode: '0644'
     - name: Compute default gateway (for ICMP)
       command: sh -lc "{{ ping_target_cmd }}"
       register: gw

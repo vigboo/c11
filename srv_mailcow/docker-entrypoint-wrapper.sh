@@ -20,6 +20,10 @@ EOF
 cat > "$CONF_DIR/dovecot.cf" << 'EOF'
 # Disable TLS for IMAP/POP (lab)
 ssl = no
+# Allow plaintext auth even without SSL (lab only)
+disable_plaintext_auth = no
+# Ensure PLAIN/LOGIN mechanisms are enabled
+auth_mechanisms = plain login
 EOF
 
 # Basic anti-malware/SEG tweaks via Rspamd: block common dangerous extensions

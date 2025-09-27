@@ -13,6 +13,6 @@ $final_bad_header_destiny = D_PASS;
 $bad_header_quarantine_to = undef;
 # Не слать автоуведомления отправителю
 $warnbadhsender = 0;
-
+$inet_socket_port = 10024;
 #------------ Do not modify anything below this line -------------
 1;  # ensure a defined return
