@@ -17,9 +17,6 @@ RUN apt-get update \
     acl \
  && rm -rf /var/lib/apt/lists/*
 
-COPY start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
-
 EXPOSE 22 139 445
 EXPOSE 137/udp 138/udp
 

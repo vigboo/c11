@@ -50,5 +50,9 @@ EOF
 chmod 0644 /etc/cron.d/ansible_runner
 service cron restart || service cron start || true
 
+# очистка журналов, подклчюченных из volumes
+echo "" > /var/log/get_ansible_workspace.log
+echo "" > /var/log/ansible_runner.log
+
 # Keep running: sshd in foreground
 exec /usr/sbin/sshd -D

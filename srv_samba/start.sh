@@ -4,6 +4,7 @@ set -euo pipefail
 # Defaults
 SAMBA_USER=${SAMBA_USER}
 SAMBA_PASSWORD=${SAMBA_PASSWORD}
+ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
 SAMBA_SHARE_NAME=${SAMBA_SHARE_NAME:-Share}
 SAMBA_SHARE_PATH=${SAMBA_SHARE_PATH:-/share}
 WORKGROUP=${WORKGROUP:-WORKGROUP}
@@ -13,25 +14,6 @@ GATEWAY_IP=${GATEWAY_IP:-192.168.0.1}
 ip route del default || true
 ip route add default via "$GATEWAY_IP" || true
 
-# SSH setup (avoid noisy errors if config dir missing)
-mkdir -p /etc/ssh /run/sshd
-if [ ! -f /etc/ssh/sshd_config ]; then
-  cat > /etc/ssh/sshd_config <<'EOF'
-Port 22
-Protocol 2
-HostKey /etc/ssh/ssh_host_rsa_key
-HostKey /etc/ssh/ssh_host_ecdsa_key
-HostKey /etc/ssh/ssh_host_ed25519_key
-PasswordAuthentication yes
-PermitRootLogin no
-UsePAM yes
-Subsystem sftp /usr/lib/openssh/sftp-server
-EOF
-fi
-sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config || true
-sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config || true
-ssh-keygen -A >/dev/null 2>&1 || true
-
 # Create local users (system + ansible)
 if ! id -u "$SAMBA_USER" >/dev/null 2>&1; then
   useradd -m -s /bin/bash "$SAMBA_USER" || true
@@ -39,13 +21,6 @@ fi
 echo "$SAMBA_USER:$SAMBA_PASSWORD" | chpasswd
 echo "$SAMBA_USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/90-$SAMBA_USER
 chmod 0440 /etc/sudoers.d/90-$SAMBA_USER
-
-if ! id -u ansible >/dev/null 2>&1; then
-  useradd -m -s /bin/bash ansible || true
-fi
-echo "ansible:${ANSIBLE_PASSWORD:-$SAMBA_PASSWORD}" | chpasswd
-echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/91-ansible
-chmod 0440 /etc/sudoers.d/91-ansible
 
 # Prepare share and sample content
 mkdir -p "$SAMBA_SHARE_PATH"
@@ -105,8 +80,10 @@ EOF
 # Create Samba user (requires system account to exist)
 printf '%s\n%s\n' "$SAMBA_PASSWORD" "$SAMBA_PASSWORD" | smbpasswd -s -a "$SAMBA_USER" || true
 
-# Start services
+# Разворачиваем и запускаем sshd + ansible пользователя
+/usr/local/bin/ansible_agent_deploy.sh
 /usr/sbin/sshd
+
 ionice -c 3 nmbd -D || true
 # Start smbd in foreground (-F); '-S' is not supported on Debian/Ubuntu smbd
 exec ionice -c 3 smbd -F --no-process-group </dev/null

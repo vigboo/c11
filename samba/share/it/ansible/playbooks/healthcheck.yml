@@ -26,20 +26,6 @@
       setup:
       when: is_alpine == 'false'
 
-  tasks:
-    - name: Создать пустой файл
-      file:
-        path: /tmp/check
-        state: touch
-        owner: root
-        group: root
-        mode: '0644'
-    - name: Compute default gateway (for ICMP)
-      command: sh -lc "{{ ping_target_cmd }}"
-      register: gw
-      changed_when: false
-      failed_when: false
-
     - name: ICMP ping default gateway
       command: sh -lc "ping -c1 -W1 {{ gw.stdout | default('127.0.0.1') }}"
       register: icmp

@@ -7,15 +7,6 @@ sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1 || true
 # Prepare PATH
 echo 'export PATH=/usr/sbin:/sbin:$PATH' > /etc/profile.d/00-sbin.sh
 
-# SSH setup for petrovich (system administrator)
-id -u petrovich >/dev/null 2>&1 || adduser -D petrovich
-echo "petrovich:${PETROVICH_PASSWORD:-Passw0rd!}" | chpasswd
-echo 'petrovich ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-petrovich && chmod 0440 /etc/sudoers.d/90-petrovich
-sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
-sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
-mkdir -p /run/sshd
-ssh-keygen -A
-
 # Rename interfaces to stable names by subnet (нужно чтобы обеспечить стабильность привязки названий интерфейсов подсетям)
 #  - 192.168.99.2/24  -> eth_nat
 #  - 192.168.1.0/24 -> eth_users
@@ -56,6 +47,9 @@ echo "Set default route via 192.168.99.254 / eth_nat"
 
 # Load nftables rules
 nft -f /etc/nftables.conf
+
+# Разворачиваем и запускаем sshd + ansible пользователя
+/usr/local/bin/ansible_agent_deploy.sh
 
 # Keep running
 exec /usr/sbin/sshd -D

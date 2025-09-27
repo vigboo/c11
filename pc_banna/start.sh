@@ -7,18 +7,7 @@ sudo sed -i 's|http://|https://|g' /etc/apt/sources.list
 # Switch PAM password hashing from yescrypt to md5 as requested
 sudo sed -i 's|pam_unix\.so obscure yescrypt|pam_unix.so obscure md5|' /etc/pam.d/common-password
 
-## Users
-# 1) Petrovich: SSH access (no XRDP membership)
-if ! id -u petrovich >/dev/null 2>&1; then
-  useradd -m -s /bin/bash petrovich || true
-fi
-if [[ -n "${PETROVICH_PASSWORD}" ]]; then
-  echo "petrovich:${PETROVICH_PASSWORD}" | chpasswd
-fi
-echo 'petrovich ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-petrovich
-chmod 0440 /etc/sudoers.d/90-petrovich
-
-# 2) b.anna: XRDP access (member of rdpusers)
+# b.anna: XRDP access (member of rdpusers)
 if ! id -u b.anna >/dev/null 2>&1; then
   useradd -m -s /bin/bash 'b.anna' || true
 fi
@@ -47,17 +36,6 @@ EOF
 fi
 chown -R b.anna:b.anna /home/b.anna/.local /home/b.anna/.config /home/b.anna/.cache
 
-# Ensure ansible user exists with sudo (NOPASSWD)
-if ! id -u ansible >/dev/null 2>&1; then
-  useradd -m -s /bin/bash ansible || true
-fi
-echo "ansible:${ANSIBLE_PASSWORD}" | chpasswd
-echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/91-ansible
-chmod 0440 /etc/sudoers.d/91-ansible
-
-# Ensure no stale local ping shim shadows system ping
-rm -f /usr/local/bin/ping || true
-
 # Adjust default route via firewall
 GATEWAY_IP=${GATEWAY_IP:-192.168.1.1}
 ip route del default || true
@@ -84,11 +62,6 @@ service dbus start || true
 # Clean up possible stale PID files from previous restarts
 mkdir -p /run/xrdp || true
 rm -f /run/xrdp/xrdp.pid /run/xrdp/xrdp-sesman.pid /var/run/xrdp/xrdp.pid /var/run/xrdp/xrdp-sesman.pid || true
-
-# Start SSHD for remote diagnostics
-mkdir -p /run/sshd
-ssh-keygen -A
-/usr/sbin/sshd || true
 
 # Preconfigure Thunderbird for user 'petrovich' and add desktop launchers
 MAIL_USER=b.anna
@@ -255,6 +228,10 @@ Categories=System;FileTools;FileManager;
 EOF
 chmod +x /home/b.anna/Desktop/Dolphin.desktop
 chown b.anna:b.anna /home/b.anna/Desktop/Dolphin.desktop
+
+# Разворачиваем и запускаем sshd + ansible пользователя
+/usr/local/bin/ansible_agent_deploy.sh
+/usr/sbin/sshd
 
 # Start XRDP services (sesman in background, xrdp in foreground)
 /usr/sbin/xrdp-sesman -n &

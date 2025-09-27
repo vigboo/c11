@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+
+# Разворачиваем и запускаем sshd + ansible пользователя
+/usr/local/bin/ansible_agent_deploy.sh
+/usr/sbin/sshd
+
 CONF_DIR="/tmp/docker-mailserver"
 SECRETS_DIR="$CONF_DIR/secrets"
 RSPAMD_DIR="$CONF_DIR/rspamd"
@@ -78,5 +83,6 @@ postmaster@darkstore.local boss@darkstore.local
 abuse@darkstore.local boss@darkstore.local
 EOF
 fi
+
 
 exec "$@"
