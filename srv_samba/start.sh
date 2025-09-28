@@ -22,35 +22,6 @@ echo "$SAMBA_USER:$SAMBA_PASSWORD" | chpasswd
 echo "$SAMBA_USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/90-$SAMBA_USER
 chmod 0440 /etc/sudoers.d/90-$SAMBA_USER
 
-# Prepare share and sample content
-mkdir -p "$SAMBA_SHARE_PATH"
-for d in mems managers buh it; do
-  mkdir -p "$SAMBA_SHARE_PATH/$d"
-  if [ ! -f "$SAMBA_SHARE_PATH/$d/readme.rtf" ]; then
-    cat > "$SAMBA_SHARE_PATH/$d/readme.rtf" <<'RTF'
-{\rtf1\ansi\deff0{\fonttbl{\f0 Arial;}}\f0\fs22
-This is a sample RTF file for the share.
-}
-RTF
-  fi
-done
-
-add_png() {
-  name="$1"
-  path="$SAMBA_SHARE_PATH/mems/$name"
-  [ -f "$path" ] && return 0
-  cat > "$path.b64" << 'B64'
-iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=
-B64
-  base64 -d "$path.b64" > "$path" 2>/dev/null || true
-  rm -f "$path.b64"
-}
-add_png distracted_boyfriend.png
-add_png this_is_fine.png
-add_png is_it_bug_or_feature.png
-add_png programmer_humor.png
-add_png stackoverflow.png
-
 chmod -R 0777 "$SAMBA_SHARE_PATH" || true
 
 # Samba configuration
@@ -80,7 +51,7 @@ EOF
 # Create Samba user (requires system account to exist)
 printf '%s\n%s\n' "$SAMBA_PASSWORD" "$SAMBA_PASSWORD" | smbpasswd -s -a "$SAMBA_USER" || true
 
-# Разворачиваем и запускаем sshd + ansible пользователя
+# Разворачиваем sshd + ansible пользователя
 /usr/local/bin/ansible_agent_deploy.sh
 /usr/sbin/sshd
 

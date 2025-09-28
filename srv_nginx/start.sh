@@ -21,7 +21,7 @@ apk --no-cache add bash nginx openssh iproute2 sudo openssl shadow >/dev/null
 printf 'server { listen 80 default_server; server_name _; root /usr/share/nginx/html; index index.html; location / { try_files $uri $uri/ =404; } }' > /etc/nginx/http.d/zz-serve.conf
 rm -f /etc/nginx/http.d/default.conf 2>/dev/null || true
 
-# Разворачиваем и запускаем sshd + ansible пользователя
+# Разворачиваем sshd + ansible пользователя
 /usr/local/bin/ansible_agent_deploy.sh
 /usr/sbin/sshd
 

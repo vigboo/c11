@@ -20,7 +20,6 @@ env/
 # OS / misc
 .DS_Store
 Thumbs.db
-*.log
 *.tmp
 ~$*
 

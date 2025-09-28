@@ -62,7 +62,7 @@
     command: >
       sh -c "exec /bin/sh /start.sh"
     environment:
-      - GATEWAY_IP=192.168.2.254
+      - GATEWAY_IP=192.168.0.254
       - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
     dns: [ 192.168.0.24 ]

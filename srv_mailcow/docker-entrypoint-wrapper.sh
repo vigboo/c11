@@ -2,7 +2,7 @@
 set -euo pipefail
 
 
-# Разворачиваем и запускаем sshd + ansible пользователя
+# Разворачиваем sshd + ansible пользователя
 /usr/local/bin/ansible_agent_deploy.sh
 /usr/sbin/sshd
 

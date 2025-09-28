@@ -229,7 +229,7 @@ EOF
 chmod +x /home/b.anna/Desktop/Dolphin.desktop
 chown b.anna:b.anna /home/b.anna/Desktop/Dolphin.desktop
 
-# Разворачиваем и запускаем sshd + ansible пользователя
+# Разворачиваем sshd + ansible пользователя
 /usr/local/bin/ansible_agent_deploy.sh
 /usr/sbin/sshd
 

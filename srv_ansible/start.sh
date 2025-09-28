@@ -1,21 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Ensure petrovich exists and set password
-if ! id -u petrovich >/dev/null 2>&1; then
-  useradd -m -s /bin/bash petrovich || true
-fi
-echo "petrovich:${PETROVICH_PASSWORD}" | chpasswd
-echo 'petrovich ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/90-petrovich
-chmod 0440 /etc/sudoers.d/90-petrovich
-
-# Ensure local ansible user (useful for self-management)
-if ! id -u ansible >/dev/null 2>&1; then
-  useradd -m -s /bin/bash ansible || true
-fi
-echo "ansible:${ANSIBLE_PASSWORD}" | chpasswd
-echo 'ansible ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/91-ansible
-chmod 0440 /etc/sudoers.d/91-ansible
+# Разворачиваем sshd + ansible пользователя
+/usr/local/bin/ansible_agent_deploy.sh
 
 # Default route via firewall
 GATEWAY_IP=${GATEWAY_IP}
