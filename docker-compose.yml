@@ -25,7 +25,6 @@
     container_name: fw
     privileged: true
     cap_add: [ "NET_ADMIN" ]
-    user: root
     restart: always
     networks:
       nat_net:
@@ -37,11 +36,11 @@
       servers_net:
         ipv4_address: 192.168.0.254
     volumes:
-      - ./fw/nftables.conf:/etc/nftables.conf:rwx
+      - ./fw/nftables.conf:/etc/nftables.conf:rw
       # Из-за flush ruleset ломается внутренний DNS-сервис 127.0.0.11 контейнера,
       # поэтому надо вручную назначить корпоративный DNS-сервер
       - ./fw/etc/resolv.conf:/etc/resolv.conf:ro
-      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rx
+      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rw
     environment:
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
       - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
@@ -58,7 +57,7 @@
     volumes:
       - ./www:/usr/share/nginx/html:ro
       - ./srv_nginx/start.sh:/start.sh:ro
-      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rx      
+      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rw     
     # Настройка маршрута, пользователей, SSH и nginx
     command: >
       sh -c "exec /bin/sh /start.sh"
@@ -70,10 +69,10 @@
 
   srv_bunkerweb:
     depends_on: [ fw ]
-    image:  bunkerity/bunkerweb-all-in-one:latest
+    image:  bunkerity/bunkerweb:latest
     container_name: srv_bunkerweb
     cap_add: [ "NET_ADMIN" ]
-    user: root
+    #user: root
     restart: always
     networks:
       dmz_net:
@@ -163,7 +162,6 @@
     cap_add:
       - NET_ADMIN
       - SYS_ADMIN
-    user: root
     devices:
       - /dev/fuse
     security_opt:
@@ -173,7 +171,8 @@
       users_net:
         ipv4_address: 192.168.1.3
     volumes:
-      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rx        
+      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rw
+      - ./pc_banna/mounted.sh:/usr/local/bin/mounted.sh:rw   
     environment:
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
       - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
@@ -221,9 +220,9 @@
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
     volumes:
       - ./srv_mailcow/config/:/tmp/docker-mailserver/
-      - ./srv_mailcow/amavis/50-user:/etc/amavis/conf.d/50-user:rwx
+      - ./srv_mailcow/amavis/50-user:/etc/amavis/conf.d/50-user:rw
       - ./srv_mailcow/rspamd/:/tmp/docker-mailserver/rspamd/
-      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rx      
+      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rw     
     dns: [ 192.168.0.24 ]
     
   srv_ansible:
@@ -231,18 +230,18 @@
     build: ./srv_ansible
     container_name: srv_ansible
     cap_add: [ "NET_ADMIN" ]
-    user: root
+    #user: root
     restart: always
     networks:
       servers_net:
         ipv4_address: 192.168.0.21
     volumes:
       - ./srv_ansible/ansible.cfg:/etc/ansible/ansible.cfg:rw
-      - ./srv_ansible/ansible_sync.py:/usr/local/bin/ansible_sync.py:rwx
-      - ./srv_ansible/run_ansible_playbooks.sh:/usr/local/bin/run_ansible_playbooks.sh:rwx
+      - ./srv_ansible/ansible_sync.py:/usr/local/bin/ansible_sync.py:rw
+      - ./srv_ansible/run_ansible_playbooks.sh:/usr/local/bin/run_ansible_playbooks.sh:rw
       - ./srv_ansible/logs/ansible_runner.log:/var/log/ansible_runner.log:rw
       - ./srv_ansible/logs/get_ansible_workspace.log:/var/log/get_ansible_workspace.log:rw
-      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rx            
+      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rw           
     environment:
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
       - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
@@ -256,13 +255,13 @@
     container_name: srv_samba
     cap_add: [ "NET_ADMIN" ]
     restart: always
-    user: root
+    #user: root
     networks:
       servers_net:
         ipv4_address: 192.168.0.22
     volumes:
       - ./samba/share:/share
-      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rx
+      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rw
     environment:
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
       - SAMBA_USER=${SAMBA_USER}

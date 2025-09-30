@@ -52,6 +52,7 @@ EOF
 printf '%s\n%s\n' "$SAMBA_PASSWORD" "$SAMBA_PASSWORD" | smbpasswd -s -a "$SAMBA_USER" || true
 
 # Разворачиваем sshd + ansible пользователя
+chmod +x /usr/local/bin/ansible_agent_deploy.sh
 /usr/local/bin/ansible_agent_deploy.sh
 /usr/sbin/sshd
 

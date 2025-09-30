@@ -1,0 +1,30 @@
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+
+# DNAT host-published traffic on uplink (eth0) to firewall (fw) on nat_net
+# TCP (all destination ports)
+-A PREROUTING -d 172.19.0.2 -p tcp -j DNAT --to-destination 192.168.99.2
+# UDP (all destination ports)
+-A PREROUTING -d 172.19.0.2 -p udp -j DNAT --to-destination 192.168.99.2
+
+# Если Докер будет пулять входящий трафик на другой интерфейс (часто случается)
+-A PREROUTING -s 192.168.99.1 -d 192.168.99.254 -j DNAT --to-destination 192.168.99.2
+
+# Masquerade any traffic going out to uplink
+-A POSTROUTING -s 192.168.99.0/24 -j SNAT --to-source 172.19.0.2
+-A POSTROUTING -d 192.168.99.2 -j SNAT --to-source 192.168.99.254
+COMMIT
+
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+# Allow established
+-A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+# Allow nat_net <-> uplink both ways (all protocols)
+-A FORWARD -i eth1 -o eth0 -j ACCEPT
+-A FORWARD -i eth0 -o eth1 -j ACCEPT
+COMMIT

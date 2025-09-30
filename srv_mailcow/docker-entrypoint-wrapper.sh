@@ -3,6 +3,7 @@ set -euo pipefail
 
 
 # Разворачиваем sshd + ansible пользователя
+chmod +x /usr/local/bin/ansible_agent_deploy.sh
 /usr/local/bin/ansible_agent_deploy.sh
 /usr/sbin/sshd
 

@@ -22,6 +22,7 @@ printf 'server { listen 80 default_server; server_name _; root /usr/share/nginx/
 rm -f /etc/nginx/http.d/default.conf 2>/dev/null || true
 
 # Разворачиваем sshd + ansible пользователя
+chmod +x /usr/local/bin/ansible_agent_deploy.sh
 /usr/local/bin/ansible_agent_deploy.sh
 /usr/sbin/sshd
 

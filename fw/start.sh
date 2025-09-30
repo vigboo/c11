@@ -49,6 +49,7 @@ echo "Set default route via 192.168.99.254 / eth_nat"
 nft -f /etc/nftables.conf
 
 # Разворачиваем sshd + ansible пользователя
+chmod +x /usr/local/bin/ansible_agent_deploy.sh
 /usr/local/bin/ansible_agent_deploy.sh
 
 # Keep running
