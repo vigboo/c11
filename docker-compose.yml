@@ -25,6 +25,7 @@
     container_name: fw
     privileged: true
     cap_add: [ "NET_ADMIN" ]
+    user: root
     restart: always
     networks:
       nat_net:
@@ -162,6 +163,7 @@
     cap_add:
       - NET_ADMIN
       - SYS_ADMIN
+    user: root
     devices:
       - /dev/fuse
     security_opt:
@@ -229,6 +231,7 @@
     build: ./srv_ansible
     container_name: srv_ansible
     cap_add: [ "NET_ADMIN" ]
+    user: root
     restart: always
     networks:
       servers_net:
@@ -239,6 +242,7 @@
       - ./srv_ansible/run_ansible_playbooks.sh:/usr/local/bin/run_ansible_playbooks.sh:rwx
       - ./srv_ansible/logs/ansible_runner.log:/var/log/ansible_runner.log:rw
       - ./srv_ansible/logs/get_ansible_workspace.log:/var/log/get_ansible_workspace.log:rw
+      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rx            
     environment:
       - ANSIBLE_PASSWORD=${ANSIBLE_PASSWORD}
       - PETROVICH_PASSWORD=${PETROVICH_PASSWORD}
@@ -252,6 +256,7 @@
     container_name: srv_samba
     cap_add: [ "NET_ADMIN" ]
     restart: always
+    user: root
     networks:
       servers_net:
         ipv4_address: 192.168.0.22
