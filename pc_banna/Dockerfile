@@ -28,6 +28,8 @@ RUN apt-get update \
     p7zip-full \
     cron \
     zip \
+    tcpdump \
+    dnsutils \
  && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome (Chromium-based) from official repo

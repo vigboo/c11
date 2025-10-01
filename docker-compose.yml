@@ -26,6 +26,8 @@
     privileged: true
     cap_add: [ "NET_ADMIN" ]
     restart: always
+    sysctls:
+      net.ipv4.ip_forward: 1    
     networks:
       nat_net:
         ipv4_address: 192.168.99.2
@@ -287,7 +289,7 @@
     
   srv_dns:
     depends_on: [ fw ]
-    image: coredns/coredns:1.11.1
+    build: ./srv_dns
     container_name: srv_dns
     cap_add: [ "NET_ADMIN" ]
     restart: always
@@ -297,7 +299,8 @@
     volumes:
       - ./srv_dns/Corefile:/etc/coredns/Corefile:ro
       - ./srv_dns/darkstore.local.db:/etc/coredns/darkstore.local.db:ro
-    command: ["-conf", "/etc/coredns/Corefile"]
+    environment:
+      - GATEWAY_IP=192.168.0.254
     expose:
       - "53"
       - "53/udp"
@@ -309,22 +312,38 @@ networks:
     ipam:
       config:
         - subnet: 172.19.0.0/24
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.name: br-uplink
   nat_net:
     driver: bridge
     ipam:
       config:
         - subnet: 192.168.99.0/24
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.name: br-nat
   users_net:
     driver: bridge
     ipam:
       config:
         - subnet: 192.168.1.0/24
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.name: br-users
   dmz_net:
     driver: bridge
     ipam:
       config:
         - subnet: 192.168.2.0/24
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.name: br-dmz
   servers_net:
+    driver: bridge
     ipam:
       config:
         - subnet: 192.168.0.0/24
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.name: br-servers

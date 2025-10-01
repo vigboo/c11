@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euo pipefail 
 
 # Ensure APT repositories use HTTPS (replace any http:// with https://)
 sudo sed -i 's|http://|https://|g' /etc/apt/sources.list
@@ -36,10 +36,6 @@ EOF
 fi
 chown -R b.anna:b.anna /home/b.anna/.local /home/b.anna/.config /home/b.anna/.cache
 
-# Adjust default route via firewall
-GATEWAY_IP=${GATEWAY_IP:-192.168.1.1}
-ip route del default || true
-ip route add default via "$GATEWAY_IP" || true
 
 # Harden xrdp.ini: keep listener at 3389 in [Globals], ensure [Xorg] uses port=-1
 awk 'BEGIN{in_g=0} \
