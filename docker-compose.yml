@@ -74,7 +74,7 @@
     image:  bunkerity/bunkerweb:latest
     container_name: srv_bunkerweb
     cap_add: [ "NET_ADMIN" ]
-    #user: root
+    user: root
     restart: always
     networks:
       dmz_net:
@@ -101,8 +101,6 @@
       - ./srv_bunkerweb/conf:/etc/bunkerweb
       - ./srv_bunkerweb/data:/var/lib/bunkerweb
       - ./srv_bunkerweb/start.sh:/start.sh:ro
-      # static files for autoconf include path
-      # (custom HTTP servers go under /etc/bunkerweb/configs/http)
     dns: [ 192.168.0.24 ]
     entrypoint: ["/bin/sh", "/start.sh"]
 
@@ -304,8 +302,6 @@
     expose:
       - "53"
       - "53/udp"
-    
-
 networks:
   uplink_net:
     driver: bridge
@@ -347,3 +343,4 @@ networks:
     driver_opts:
       com.docker.network.bridge.enable_icc: "true"
       com.docker.network.bridge.name: br-servers
+
